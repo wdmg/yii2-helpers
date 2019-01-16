@@ -1,2 +1,2 @@
-# yii2-datetime-helper
-DateTime helper for Yii2
+# Yii2 Helpers
+Custom helpers for Yii2
