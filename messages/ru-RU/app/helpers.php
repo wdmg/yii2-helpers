@@ -1,0 +1,7 @@
+<?php
+
+return [
+    '{y, plural, =0{} =1{# year} one{# year} few{# years} many{# years} other{# years}}{y, plural, =0{} =1{, } other{, }}{m, plural, =0{} =1{# month} one{# month} few{# months} many{# months} other{# months}}{m, plural, =0{} =1{, } other{, }}{d, plural, =0{} =1{# day} one{# day} few{# days} many{# days} other{# days}}{d, plural, =0{} =1{, } other{, }}{h, plural, =0{} =1{# hour} one{# hour} few{# hours} many{# hours} other{# hours}}{h, plural, =0{} =1{, } other{, }}{i, plural, =0{} =1{# minute} one{# minute} few{# minutes} many{# minutes} other{# minutes}}{i, plural, =0{} =1{, } other{, }}{s, plural, =0{} =1{# second} one{# second} few{# seconds} many{# seconds} other{# seconds}}{invert, plural, =0{ left} =1{ ago} other{}}' => '{y, plural, =0{} =1{# год} one{# год} few{# года} many{# лет} other{# лет}}{y, plural, =0{} =1{, } other{, }}{m, plural, =0{} =1{# месяц} one{# месяц} few{# месяца} many{# месяцев} other{# месяцев}}{m, plural, =0{} =1{, } other{, }}{d, plural, =0{} =1{# день} one{# день} few{# дня} many{# дней} other{# дней}}{d, plural, =0{} =1{, } other{, }}{h, plural, =0{} =1{# час} one{# час} few{# часа} many{# часов} other{# часов}}{h, plural, =0{} =1{, } other{, }}{i, plural, =0{} =1{# минута} one{# минута} few{# минуты} many{# минут} other{# минут}}{i, plural, =0{} =1{, } other{, }}{s, plural, =0{} =1{# секунда} one{# секунд} few{# секунды} many{# секунд} other{# секунд}}{invert, plural, =0{ осталось} =1{ назад} other{}}',
+];
+
+?>
