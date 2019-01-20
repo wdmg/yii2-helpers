@@ -21,8 +21,9 @@
     }
   ],
   "require": {
-    "yiisoft/yii2": "^2.0.10"
+    "yiisoft/yii2": "^2.0.13"
   },
+  "minimum-stability": "dev",
   "autoload": {
     "psr-4": {
       "wdmg\\helpers\\": "src"
