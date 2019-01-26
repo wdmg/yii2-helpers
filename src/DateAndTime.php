@@ -9,6 +9,8 @@ class DateAndTime extends BaseFormatConverter
 
     public static function diff($datetime1 = null, $datetime2 = null, $options = [])
     {
+        //@TODO: https://www.yiiframework.com/doc/api/2.0/yii-i18n-formatter#asRelativeTime()-detail
+
         static::initI18N('app/helpers');
         $default = [
             'layout' => '<span class="{class}">{datetime}</span>',
