@@ -1,6 +1,19 @@
 <?php
 
 namespace wdmg\helpers;
+
+/**
+ * Yii2 date and time helper
+ *
+ * @category        Helpers
+ * @version         1.0.2
+ * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
+ * @link            https://github.com/wdmg/yii2-helpers
+ * @copyright       Copyright (c) 2019 W.D.M.Group, Ukraine
+ * @license         https://opensource.org/licenses/MIT Massachusetts Institute of Technology (MIT) License
+ *
+ */
+
 use Yii;
 use yii\helpers\BaseFormatConverter;
 
