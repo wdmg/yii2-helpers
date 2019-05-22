@@ -23,7 +23,7 @@ class StringHelper extends BaseStringHelper
 
         static::initI18N('app/helpers');
 
-        $number = number_format($input, $decimals);
+        $number = number_format(intval($input), $decimals);
         $decimals_count = substr_count($number, ',');
         if($decimals_count != '0') {
             if($decimals_count == '1') {
