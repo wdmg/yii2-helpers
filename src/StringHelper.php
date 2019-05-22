@@ -16,6 +16,7 @@ namespace wdmg\helpers;
 
 use Yii;
 use yii\helpers\BaseStringHelper;
+use yii\base\InvalidArgumentException;
 
 class StringHelper extends BaseStringHelper
 {
@@ -29,17 +30,77 @@ class StringHelper extends BaseStringHelper
             if($decimals_count == '1') {
                 return substr($number, 0, -4) . ($uppercase ? 'K' : 'k');
             } else if ($decimals_count == '2') {
-                return substr($number, 0, -8) . ($uppercase ? 'M' : 'mil');
+                return substr($number, 0, -8) . ($uppercase ? 'M' : ' mill.');
             } else if($decimals_count == '3') {
-                return substr($number, 0, -12) . ($uppercase ? 'B' : 'bil');
+                return substr($number, 0, -12) . ($uppercase ? 'B' : ' bill.');
             } else if($decimals_count == '4') {
-                return substr($number, 0, -16) . ($uppercase ? 'T' : 'tril');
+                return substr($number, 0, -16) . ($uppercase ? 'T' : ' trill.');
             } else {
                 return $number;
             }
         } else {
             return $input;
         }
+    }
+
+
+    public static function stringShorter($input, $start = 55, $end = 0, $cut = true, $ending = '…') {
+
+        static::initI18N('app/helpers');
+
+        if (empty($input)) {
+            throw new InvalidArgumentException('The `$input` argument must not be empty.');
+            return null;
+        }
+
+        if ($start < 0 || $end < 0) {
+            throw new InvalidArgumentException('The `$start` or `$end` argument must not be less than zero.');
+            return null;
+        }
+
+        if (strlen($input) > $start && $end == 0) {
+            $string = explode("\n", self::mb_wordwrap($input, $start, "\n", $cut));
+            $input = $string[0] . $ending;
+        } else if (strlen($input) > $start && $end > 0) {
+            $start_string = explode("\n", self::mb_wordwrap($input, $start, "\n", $cut));
+            $end_string = explode("\n", self::mb_wordwrap(strrev($input), $end, "\n", $cut));
+            $input = $start_string[0] . $ending . " " . strrev($end_string[0]);
+        }
+
+        return $input;
+    }
+
+    private static function mb_wordwrap($str, $length = 75, $break = "\n", $cut = false) {
+        $lines = explode($break, $str);
+        foreach ($lines as &$line) {
+            $line = rtrim($line);
+            if (mb_strlen($line) <= $length) {
+                continue;
+            }
+
+            $words = explode(' ', $line);
+            $line = '';
+            $actual = '';
+            foreach ($words as $word) {
+                if (mb_strlen($actual . $word) <= $length) {
+                    $actual .= $word . ' ';
+                } else {
+                    if ($actual != '') {
+                        $line .= rtrim($actual).$break;
+                    }
+                    $actual = $word;
+                    if ($cut) {
+                        while (mb_strlen($actual) > $length) {
+                            $line .= mb_substr($actual, 0, $length).$break;
+                            $actual = mb_substr($actual, $length);
+                        }
+                    }
+                    $actual .= ' ';
+                }
+            }
+            $line .= trim($actual);
+        }
+        return implode($break, $lines);
     }
 
     /**

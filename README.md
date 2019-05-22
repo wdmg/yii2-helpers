@@ -10,25 +10,62 @@ Custom helpers for Yii2
 # Installation
 To install the helpers, run the following command in the console:
 
-`$ composer require "wdmg/yii2-datepicker"`
+`$ composer require "wdmg/yii2-helpers"`
 
 # Usage
-Example of standalone widget:
+An example of a standalone time difference widget:
 
     <?php
     
-    use wdmg\helpers\DateAndTime;
-    ...
+        use wdmg\helpers\DateAndTime;
+        ...
+        
+        echo DateAndTime::diff($data->updated_at, null, [
+            'layout' => '<small class="pull-right {class}">[ {datetime} ]</small>',
+            'inpastClass' => 'text-danger', // Class for datediff in past time
+            'futureClass' => 'text-success', // Class for datediff in future time
+        ]);
     
-    echo DateAndTime::diff($data->updated_at, null, [
-        'layout' => '<small class="pull-right {class}">[ {datetime} ]</small>',
-        'inpastClass' => 'text-danger', // Class for datediff in past time
-        'futureClass' => 'text-success', // Class for datediff in future time
-    ]);
+    ?>
+    
+Example of integer amount to string:
+
+    <?php
+    
+        use wdmg\helpers\StringHelper;
+        ...
+        
+        echo StringHelper::integerAmount('1256', 2, true) . "<br/>";
+        // 1,25K
+        
+        echo StringHelper::integerAmount('125763', 2, true) . "<br/>";
+        // 125,76K
+        
+        echo StringHelper::integerAmount('2525763', 2, false) . "<br/>";
+        // 2,52 mill.
+        
+        echo StringHelper::integerAmount('1432525763', 2, false) . "<br/>";
+        // 1,43 bill.
+    
+    ?>
+    
+Example of string trim including full words:
+
+    <?php
+    
+        use wdmg\helpers\StringHelper;
+        ...
+        
+        echo StringHelper::stringShorter('Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.', 55, 0) . "<br/>";
+        // Lorem ipsum dolor sit amet, consectetuer adipiscing…
+        
+        echo StringHelper::stringShorter('Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.', 55, 25) . "<br/>";
+        // Lorem ipsum dolor sit amet, consectetuer adipiscing… ex ea commodo consequat.
     
     ?>
 
 # Status and version
+* v.1.1.0 - Added string helpers: `StringHelper::integerAmount()` and `StringHelper::stringShorter()`
 * v.1.0.2 - Added internationalization and translations, refactoring.
-* v.1.0.1 - Added datetime helper class with `diff()` method.
+* v.1.0.1 - Added datetime helper class with `DateAndTime::diff()` method.
 * v.1.0.0 - Helpers in progress development.
