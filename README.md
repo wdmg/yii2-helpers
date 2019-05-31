@@ -5,7 +5,7 @@ Custom helpers for Yii2
 
 # Requirements 
 * PHP 5.6 or higher
-* Yii2 v.2.0.13 and newest
+* Yii2 v.2.0.19 and newest
 
 # Installation
 To install the helpers, run the following command in the console:
@@ -65,7 +65,5 @@ Example of string trim including full words:
     ?>
 
 # Status and version
+* v.1.1.1 - Update Yii2 version
 * v.1.1.0 - Added string helpers: `StringHelper::integerAmount()` and `StringHelper::stringShorter()`
-* v.1.0.2 - Added internationalization and translations, refactoring.
-* v.1.0.1 - Added datetime helper class with `DateAndTime::diff()` method.
-* v.1.0.0 - Helpers in progress development.
