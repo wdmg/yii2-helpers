@@ -65,5 +65,4 @@ Example of string trim including full words:
     ?>
 
 # Status and version
-* v.1.1.1 - Update Yii2 version
-* v.1.1.0 - Added string helpers: `StringHelper::integerAmount()` and `StringHelper::stringShorter()`
+* v.1.1.2 - Module transferred to base module interface. Update Yii2 version.
