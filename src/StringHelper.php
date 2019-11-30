@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 short integer helper
  *
  * @category        Helpers
- * @version         1.2.0
+ * @version         1.2.1
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 W.D.M.Group, Ukraine
@@ -43,6 +43,35 @@ class StringHelper extends BaseStringHelper
         }
     }
 
+
+    public static function stripTags($input, $tags = "a|strong|b|p", $replacement = '') {
+
+        static::initI18N('app/helpers');
+
+        if (empty($input)) {
+            throw new InvalidArgumentException('The `$input` argument must not be empty.');
+            return null;
+        }
+
+        if (!is_string($tags)) {
+            throw new InvalidArgumentException('The `$tags` argument must be a string.');
+            return null;
+        }
+
+        if (!is_string($replacement)) {
+            throw new InvalidArgumentException('The `$replacement` argument must be a string.');
+            return null;
+        }
+
+        if (empty($tags))
+            $input = preg_replace("#<\s*\/?\s*[^>]*?>#im", $replacement, $input);
+        else
+            $input = preg_replace("#<\s*\/?(".$strip_tags.")\s*[^>]*?>#im", $replacement, $input);
+
+        $input = str_replace("\n", ' ', $input);
+        $input = preg_replace('|[\s]+|s', ' ', $input);
+        return $input;
+    }
 
     public static function stringShorter($input, $start = 55, $end = 0, $cut = true, $ending = '…') {
 

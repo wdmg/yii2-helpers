@@ -65,5 +65,6 @@ Example of string trim including full words:
     ?>
 
 # Status and version
+* v.1.2.1 - Added stripTags() method for StringHelper
 * v.1.2.0 - Customize ArrayHelper (searching parents of array item)
 * v.1.1.2 - Module transferred to base module interface. Update Yii2 version.
