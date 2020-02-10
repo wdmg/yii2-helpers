@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 text analyzer helper
  *
  * @category        Helpers
- * @version         1.3.0
+ * @version         1.3.1
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 W.D.M.Group, Ukraine
@@ -74,7 +74,7 @@ class TextAnalyzer extends StringHelper
         $text = preg_replace('/[^\w\s]/u', ' ', $text);
 
         // Count the number of characters with a space
-        $this->_symbols_count = strlen($text);
+        $this->_symbols_count = mb_strlen($text);
 
         $text = trim(preg_replace('/\s+/', ' ', $text));
 
@@ -99,7 +99,7 @@ class TextAnalyzer extends StringHelper
         }
 
         // Counting the number of characters without a space
-        $this->_symbols_count_clear = strlen(implode('', $words));
+        $this->_symbols_count_clear = mb_strlen(implode('', $words));
 
         // All words into lower case
         $words = array_map('mb_strtolower', $words);

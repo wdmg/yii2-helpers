@@ -65,6 +65,7 @@ Example of string trim including full words:
     ?>
 
 # Status and version
+* v.1.3.1 - Added crossMerging() method to ArrayHelper
 * v.1.3.0 - Added TextAnalyzer helper
 * v.1.2.2 - Added exportCSV, importCSV methods to ArrayHelper
 * v.1.2.1 - Added stripTags() method for StringHelper

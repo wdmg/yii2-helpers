@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 custom array helper
  *
  * @category        Helpers
- * @version         1.3.0
+ * @version         1.3.1
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 W.D.M.Group, Ukraine
@@ -138,4 +138,45 @@ class ArrayHelper extends BaseArrayHelper
         }
     }
 
+    public static function crossMerging($array1, $array2, $count1 = null, $count2 = null) {
+        $i = 0;
+        $j = 0;
+        $k = 0;
+        $array = [];
+
+        if (!is_array($array1)) {
+            throw new InvalidArgumentException('The `$array1` argument must be array.');
+            return null;
+        }
+
+        if (!is_array($array2)) {
+            throw new InvalidArgumentException('The `$array2` argument must be array.');
+            return null;
+        }
+
+        if (is_null($count1))
+            $count1 = count($array1);
+
+        if (is_null($count2))
+            $count2 = count($array2);
+
+        // Traverse both array
+        while ($i < $count1 && $j < $count2) {
+            $array[$k++] = $array1[$i++];
+            $array[$k++] = $array2[$j++];
+        }
+
+        // Store remaining elements of first array
+        while ($i < $count1) {
+            $array[$k++] = $array1[$i++];
+        }
+
+        // Store remaining elements of second array
+        while($j < $count2) {
+            $array[$k++] = $array2[$j++];
+        }
+
+        return $array;
+
+    }
 }
