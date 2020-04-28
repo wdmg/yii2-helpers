@@ -1,6 +1,6 @@
-[![Progress](https://img.shields.io/badge/required-Yii2_v2.0.33-blue.svg)](https://packagist.org/packages/yiisoft/yii2)
-[![Github all releases](https://img.shields.io/github/downloads/wdmg/yii2-helpers/total.svg)](https://GitHub.com/wdmg/yii2-helpers/releases/)
-[![GitHub version](https://badge.fury.io/gh/wdmg%2Fyii2-helpers.svg)](https://github.com/wdmg/yii2-helpers)
+[![Yii2](https://img.shields.io/badge/required-Yii2_v2.0.33-blue.svg)](https://packagist.org/packages/yiisoft/yii2)
+[![Downloads](https://img.shields.io/packagist/dt/wdmg/yii2-helpers.svg)](https://packagist.org/packages/wdmg/yii2-helpers)
+[![Packagist Version](https://img.shields.io/packagist/v/wdmg/yii2-helpers.svg)](https://packagist.org/packages/wdmg/yii2-helpers)
 ![Progress](https://img.shields.io/badge/progress-in_development-red.svg)
 [![GitHub license](https://img.shields.io/github/license/wdmg/yii2-helpers.svg)](https://github.com/wdmg/yii2-helpers/blob/master/LICENSE)
 
@@ -68,7 +68,7 @@ Example of string trim including full words:
     
     ?>
 
-# Status and version
+# Status and version [in progress development]
 * v.1.3.2 - Up to date dependencies
 * v.1.3.1 - Added crossMerging() method to ArrayHelper
 * v.1.3.0 - Added TextAnalyzer helper
