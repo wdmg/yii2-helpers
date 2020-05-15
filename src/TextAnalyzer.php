@@ -3,10 +3,10 @@
 namespace wdmg\helpers;
 
 /**
- * Yii2 text analyzer helper
+ * Yii2 Text analyzer helper
  *
  * @category        Helpers
- * @version         1.3.2
+ * @version         1.3.3
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2020 W.D.M.Group, Ukraine

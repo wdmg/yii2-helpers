@@ -69,6 +69,7 @@ Example of string trim including full words:
     ?>
 
 # Status and version [in progress development]
+* v.1.3.3 - Added buildTree() method to ArrayHelper
 * v.1.3.2 - Up to date dependencies
 * v.1.3.1 - Added crossMerging() method to ArrayHelper
 * v.1.3.0 - Added TextAnalyzer helper

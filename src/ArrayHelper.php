@@ -3,10 +3,10 @@
 namespace wdmg\helpers;
 
 /**
- * Yii2 custom array helper
+ * Yii2 Custom array helper
  *
  * @category        Helpers
- * @version         1.3.2
+ * @version         1.3.3
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2020 W.D.M.Group, Ukraine
@@ -178,5 +178,26 @@ class ArrayHelper extends BaseArrayHelper
 
         return $array;
 
+    }
+
+    public static function buildTree(&$array = [], $parentId = 0, $parentKey = 'parent_id', $childsKey = 'items', $level = 1) {
+        $tree = array();
+        foreach ($array as $item) {
+            if ($item[$parentKey] == $parentId) {
+                $child = self::buildTree($array, $item['id'], $parentKey, $childsKey, $level+1);
+                if ($child) {
+                    if ($childsKey) {
+                        $child = array_values($child);
+                        $item[$childsKey] = $child;
+                    } else {
+                        $item = self::merge($item, $child);
+                    }
+                }
+                $tree[$item['id']] = $item;
+                $tree[$item['id']]['_level'] = $level;
+                unset($array[$item['id']]);
+            }
+        }
+        return $tree;
     }
 }
