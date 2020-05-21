@@ -182,7 +182,7 @@ class ArrayHelper extends BaseArrayHelper
 
     public static function buildTree(&$array = [], $parentId = 0, $parentKey = 'parent_id', $childsKey = 'items', $level = 1) {
         $tree = array();
-        foreach ($array as $item) {
+        foreach ($array as &$item) {
             if ($item[$parentKey] == $parentId) {
                 $child = self::buildTree($array, $item['id'], $parentKey, $childsKey, $level+1);
                 if ($child) {
@@ -195,7 +195,7 @@ class ArrayHelper extends BaseArrayHelper
                 }
                 $tree[$item['id']] = $item;
                 $tree[$item['id']]['_level'] = $level;
-                unset($array[$item['id']]);
+                unset($item);
             }
         }
         return $tree;
