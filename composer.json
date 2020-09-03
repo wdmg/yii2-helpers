@@ -1,10 +1,10 @@
 {
   "name": "wdmg/yii2-helpers",
   "description": "Custom helper functions for Yii 2.0",
-  "keywords": ["yii", "yii2", "extension", "helper", "bootstrap", "utilities", "wdmg"],
+  "keywords": ["yii", "yii2", "extension", "helper", "array-helper", "daterime-helper", "ip-helper", "string-helper", "text-analyzer", "utilities", "wdmg"],
   "type": "yii2-extension",
   "license": "MIT",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "homepage": "https://github.com/wdmg/yii2-helpers",
   "support": {
     "source": "https://github.com/wdmg/yii2-helpers",
