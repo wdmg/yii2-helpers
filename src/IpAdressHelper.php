@@ -484,8 +484,8 @@ class IpAdressHelper extends BaseArrayHelper
     /**
      * Applies the mask to ip and returns the subnet
      *
-     * @param string $ip IP-adress (v4), in format: XXX.XXX.XXX.XXX
-     * @param string $mask subnet mask, in format: XXX.XXX.XXX.XXX
+     * @param string | integer $ip IP-adress (v4), in format: XXX.XXX.XXX.XXX
+     * @param string | integer $mask subnet mask, in format: XXX.XXX.XXX.XXX
      * @return string subnet, in format: XXX.XXX.XXX.XXX
      */
     public static function applyNetmask($ip, $mask) {
@@ -621,6 +621,63 @@ class IpAdressHelper extends BaseArrayHelper
             "broadcast" => self::hex2ip(self::zeroFill(base_convert(base_convert($nethex, 16, 10) + $available_hosts + 2, 10, 16), 8))
         ];
     }
+
+    /**
+     * Get list of IP adress by range
+     *
+     * @param string | array $range
+     * @param bool $asInteger
+     * @return array
+     */
+    public static function range2list($range, $asInteger = false) {
+        $list = [];
+
+        if (!is_array($range) && is_string($range))
+            $range = [$range];
+
+        foreach($range as $address) {
+            if (preg_match('/([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)(\-|\/)([0-9]+)$/', $address, $matches)) {
+                $ip = $matches[1] . '.' . $matches[2] . '.' . $matches[3] . '.' . $matches[4];
+                $ipLong = ip2long($ip);
+
+                if ($ipLong !== false) {
+                    switch($matches[5]) {
+                        case '-':
+                            $numIp = $matches[6];
+                            break;
+                        case '/':
+                            $cidr = $matches[6];
+                            if ( $cidr >= 1 && $cidr <= 32 ) {
+                                $numIp = pow(2, 32 - $cidr); // Number of IP addresses in range
+                                $netmask = (~ ($numIp - 1)); // Network mask
+                                $ipLong = $ipLong & $netmask; // First IP address (even if given IP was not the first in the CIDR range)
+                            }
+                            else {
+                                echo "\t" . "Specified CIDR " . $cidr . " is invalid (should be between 1 and 32)\n";
+                                $numIp = -1;
+                            }
+                            break;
+                    }
+
+                    for ($ipRange = 0; $ipRange < $numIp; $ipRange++) {
+                        if ($asInteger)
+                            $list[] = ($ipLong + $ipRange);
+                        else
+                            $list[] = long2ip($ipLong + $ipRange);
+                    }
+
+                } else {
+                    echo "\t" . $ip . " is invalid\n";
+                }
+            } else  {
+                echo "\tUnrecognized pattern: " . $address . "\n";
+            }
+
+        }
+
+        return $list;
+    }
+
 
     /**
      * Simply mask of IP.
