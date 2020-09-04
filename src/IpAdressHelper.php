@@ -644,7 +644,7 @@ class IpAdressHelper extends BaseArrayHelper
         else
             $mask = 0xFFFFFFFF;
 
-        if ($integer)
+        if ($asInteger)
             return $mask;
         else
             return long2ip($mask);
