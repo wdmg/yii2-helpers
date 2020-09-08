@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## 1.3.5 (2020-09-08)
+ * IpAddressHelper fixed
+ 
 ## 1.3.4 (2020-09-04)
  * Added IpAddressHelper
  

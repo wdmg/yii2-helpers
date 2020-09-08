@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 IP address helper
  *
  * @category        Helpers
- * @version         1.3.4
+ * @version         1.3.5
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2020 W.D.M.Group, Ukraine
@@ -1052,7 +1052,7 @@ class IpAddressHelper extends BaseArrayHelper
      * @param string | integer $netmask
      * @return int
      */
-    public static function netmask2bitcount($netmask) {
+    public static function netmask2bitcount($mask) {
 
         if (is_string($mask))
             $mask = ip2long($mask);
@@ -1072,7 +1072,8 @@ class IpAddressHelper extends BaseArrayHelper
      * @return integer
      */
     public static function netmask2cidr($mask) {
-        return self::netmask2bitcount($mask . "/" . $bitcount);
+        $bitcount = self::netmask2bitcount($mask);
+        return $mask . "/" . $bitcount;
     }
 
     /**
@@ -1089,14 +1090,13 @@ class IpAddressHelper extends BaseArrayHelper
             $element = bindec($element);
 
         return join('.', $netmask);
-
     }
 
     /**
      * Returns cidr by ip
      *
-     * @param $ip
-     * @param int $method, where 1 - by ripe.net ip range, 2 - by hostinfo ip range
+     * @param string $ip, in format: XXX.XXX.XXX.XXX
+     * @param int $method, where 1 - by ripe.net ip range (all IP of current provider), 2 - by hostinfo ip range (all IP of current pool)
      * @return string|null
      */
     public static function ip2cidr($ip, $method = 1) {
@@ -1109,7 +1109,7 @@ class IpAddressHelper extends BaseArrayHelper
                         $start = trim($range[0]);
                         $end = trim($range[1]);
                         $netmask = self::range2mask($start, $end);
-                        $cidr = self::netmask2cidr($netmask);
+                        $cidr = self::netmask2bitcount($netmask);
                         return $start . "/" . $cidr;
                     }
                 }
@@ -1133,10 +1133,11 @@ class IpAddressHelper extends BaseArrayHelper
     /**
      * Returns a range of IP addresses included in rank (cidr)
      *
-     * @param $cidr string, in format: XXX.XXX.XXX.XXX/YY
-     * @return array of IP with mask and range of IP`s
+     * @param string $cidr, in format: XXX.XXX.XXX.XXX/YY
+     * @param bool $asObject
+     * @return array|Object, IP with mask and range of IP`s
      */
-    public static function cidr2range($cidr) {
+    public static function cidr2range($cidr, $asObject = true) {
         $ip = explode("/", $cidr);
         $mask = 0xFFFFFFFF;
 
@@ -1145,11 +1146,18 @@ class IpAddressHelper extends BaseArrayHelper
         }
 
         $lip = ip2long($ip[0]);
-
-        return [
-            long2ip($lip & $mask) . '/' . long2ip($mask),
-            long2ip($lip & $mask) . '-' . long2ip(($lip & $mask) + (~$mask))
-        ];
+        if ($asObject) {
+            return (object)[
+                "ip" => long2ip($lip & $mask) . '/' . long2ip($mask),
+                "start" => long2ip($lip & $mask),
+                "end" => long2ip(($lip & $mask) + (~$mask))
+            ];
+        } else {
+            return [
+                long2ip($lip & $mask) . '/' . long2ip($mask),
+                long2ip($lip & $mask) . '-' . long2ip(($lip & $mask) + (~$mask))
+            ];
+        }
     }
 
     /**

@@ -71,6 +71,7 @@ Example of string trim including full words:
     ?>
 
 # Status and version [ready to use]
+* v.1.3.5 - IpAddressHelper fixed
 * v.1.3.4 - Added IpAddressHelper
 * v.1.3.3 - Added buildTree() method to ArrayHelper
 * v.1.3.2 - Up to date dependencies
