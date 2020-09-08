@@ -2,7 +2,7 @@ Changelog
 =========
 
 ## 1.3.4 (2020-09-04)
- * Added IpAdressHelper
+ * Added IpAddressHelper
  
 ## 1.3.3 (2020-05-16)
  * Added buildTree() method to ArrayHelper

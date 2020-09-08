@@ -3,7 +3,7 @@
 namespace wdmg\helpers;
 
 /**
- * Yii2 IP adress helper
+ * Yii2 IP address helper
  *
  * @category        Helpers
  * @version         1.3.4
@@ -18,7 +18,7 @@ use Yii;
 use yii\helpers\BaseArrayHelper;
 use yii\base\InvalidArgumentException;
 
-class IpAdressHelper extends BaseArrayHelper
+class IpAddressHelper extends BaseArrayHelper
 {
 
     const NETMASK_INFO = [
