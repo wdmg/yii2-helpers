@@ -1538,16 +1538,42 @@ class IpAddressHelper extends BaseArrayHelper
     /**
      * Returns whois information about a host
      *
-     * @param string $host
+     * @param $host
+     * @param null $flags
+     * @param bool $html
      * @return string|null
      */
-    public static function whois($host) {
+    public static function whois($host, $flags = null, $asHtml = true) {
+
         $zone = array_slice(explode(".", trim($host)), -1)[0];
-        $servers = self::WHOIS_SERVERS[$zone];
-        foreach ($servers as $server) {
-            if ($info = self::whoisQuery($server, trim($host)))
-                return $info;
+        if (isset(self::WHOIS_SERVERS[$zone])) {
+            $servers = self::WHOIS_SERVERS[$zone];
+            foreach ($servers as $server) {
+                if ($info = self::whoisQuery($server, trim($host))) {
+                    if ($asHtml && $formatter = Yii::$app->getFormatter())
+                        return $formatter->asNtext($info);
+                    else
+                        return $info;
+                }
+            }
+        } else {
+            $servers = [
+                "whois.lacnic.net", // All locations around the world
+                "whois.apnic.net", // For Asia Pacific
+                "whois.arin.net", // For North America
+                "whois.ripe.net", // Europe, Middle East and Central Asia
+            ];
+
+            foreach ($servers as $server) {
+                if ($info = self::whoisQuery($server, trim($host))) {
+                    if ($asHtml && $formatter = Yii::$app->getFormatter())
+                        return $formatter->asNtext($info);
+                    else
+                        return $info;
+                }
+            }
         }
+
         return null;
     }
 
