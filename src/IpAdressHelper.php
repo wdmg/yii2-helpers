@@ -360,29 +360,56 @@ class IpAdressHelper extends BaseArrayHelper
     }
 
     /**
-     * Returns bitcount (prefix of subnet)
+     * Returns the netmask according to the cidr bitmask
      *
-     * @param $mask string, in format: XXX.XXX.XXX.0
-     * @return integer
+     * @param $bitcount integer
+     * @return string
      */
-    public static function netmask2cidr($mask)
-    {
-        $long = ip2long($mask);
+    public static function subnet2netmask($bitcount) {
+        $netmask = str_split(str_pad(str_pad('', $bitcount, '1'), 32, '0'), 8);
+        foreach ($netmask as &$element) {
+            $element = bindec($element);
+        }
+
+        return join('.', $netmask);
+    }
+
+    /**
+     * Calculates the network bitmask
+     *
+     * @param string | integer $netmask
+     * @return int
+     */
+    public static function netmask2bitcount($netmask) {
+
+        if (is_string($mask))
+            $mask = ip2long($mask);
+
         $base = ip2long('255.255.255.255');
         $bitcount = 32 - log(
-                ($long ^ $base) + 1, 2
+                ($mask ^ $base) + 1, 2
             );
-        return round($bitcount);
+
+        return (int)$bitcount;
     }
 
     /**
      * Returns cidr by netmask
      *
+     * @param $mask string, in format: XXX.XXX.XXX.0
+     * @return integer
+     */
+    public static function netmask2cidr($mask) {
+        return self::netmask2bitcount($mask . "/" . $bitcount);
+    }
+
+    /**
+     * Returns netmask by cidr
+     *
      * @param $cidr string, in format: XXX.XXX.XXX.XXX/YY
      * @return string
      */
-    public static function cidr2netmask($cidr)
-    {
+    public static function cidr2netmask($cidr) {
         $ta = substr($cidr, strpos($cidr, '/') + 1) * 1;
         $netmask = str_split(str_pad(str_pad('', $ta, '1'), 32, '0'), 8);
 
@@ -394,20 +421,41 @@ class IpAdressHelper extends BaseArrayHelper
     }
 
     /**
-     * Returns the netmask according to the cidr bitmask
+     * Returns cidr by ip
      *
-     * @param $bitcount integer
-     * @return string
+     * @param $ip
+     * @param int $method, where 1 - by ripe.net ip range, 2 - by hostinfo ip range
+     * @return string|null
      */
-    public static function subnet2netmask($bitcount)
-    {
+    public static function ip2cidr($ip, $method = 1) {
+        switch ($method) {
+            case 1:
+                $info = self::ipLookup($ip); // by ripe.net lookup database
+                if (isset($info['inetnum']['inetnum'])) {
+                    $range = explode('-', $info['inetnum']['inetnum']);
+                    if (isset($range[0]) && isset($range[1])) {
+                        $start = trim($range[0]);
+                        $end = trim($range[1]);
+                        $netmask = self::range2mask($start, $end);
+                        $cidr = self::netmask2cidr($netmask);
+                        return $start . "/" . $cidr;
+                    }
+                }
+                break;
 
-        $netmask = str_split(str_pad(str_pad('', $bitcount, '1'), 32, '0'), 8);
-        foreach ($netmask as &$element) {
-            $element = bindec($element);
+            case 2:
+                $info = self::ipInfo($ip); // by hostinfo
+                if (isset($info['network']) && isset($info['broadcast'])) {
+                    $start = trim($info['network']);
+                    $end = trim($info['broadcast']);
+                    $netmask = self::range2mask($start, $end);
+                    $cidr = self::netmask2bitcount($netmask);
+                    return $start . "/" . $cidr;
+                }
+                break;
         }
 
-        return join('.', $netmask);
+        return null;
     }
 
     /**
@@ -416,8 +464,7 @@ class IpAdressHelper extends BaseArrayHelper
      * @param $cidr string, in format: XXX.XXX.XXX.XXX/YY
      * @return array of IP with mask and range of IP`s
      */
-    public static function cidr2range($cidr)
-    {
+    public static function cidr2range($cidr) {
         $ip = explode("/", $cidr);
         $mask = 0xFFFFFFFF;
 
@@ -436,12 +483,11 @@ class IpAdressHelper extends BaseArrayHelper
     /**
      * Returns an array of ranks (cidr) that include a range of IP addresses
      *
-     * @param $ipStart string, in format: XXX.XXX.XXX.XXX
-     * @param $ipEnd string, in format: XXX.XXX.XXX.XXX
+     * @param $ipStart string | integer, in format: XXX.XXX.XXX.XXX
+     * @param $ipEnd string | integer, in format: XXX.XXX.XXX.XXX
      * @return array of cidr
      */
-    public static function range2cidr($ipStart, $ipEnd)
-    {
+    public static function range2cidr($ipStart, $ipEnd) {
 
         if (is_string($ipStart) || is_string($ipEnd)) {
             $start = ip2long($ipStart);
@@ -479,6 +525,28 @@ class IpAdressHelper extends BaseArrayHelper
         }
 
         return $result;
+    }
+
+    /**
+     * Returns netmask by range of IP addresses
+     *
+     * @param $ipStart string | integer, in format: XXX.XXX.XXX.XXX
+     * @param $ipEnd string | integer, in format: XXX.XXX.XXX.XXX
+     * @param bool $asInteger
+     * @return int|string
+     */
+    public static function range2mask($ipStart, $ipEnd, $asInteger = false) {
+
+        if (is_string($ipStart))
+            $ipStart = ip2long($ipStart);
+
+        if (is_string($ipEnd))
+            $ipEnd = ip2long($ipEnd);
+
+        if ($asInteger)
+            return ($ipStart - $ipEnd) - 1;
+        else
+            return long2ip(($ipStart - $ipEnd) - 1);
     }
 
     /**
@@ -589,7 +657,7 @@ class IpAdressHelper extends BaseArrayHelper
     /**
      * Displays complete information about the IP address by netmask
      *
-     * @param $ip IP-adress (v4), in format: XXX.XXX.XXX.XXX
+     * @param $ip, IP-adress (v4) in format: XXX.XXX.XXX.XXX
      * @param $netmask IP-adress (v4), in format: XXX.XXX.XXX.XXX
      * @return array
      */
@@ -620,6 +688,47 @@ class IpAdressHelper extends BaseArrayHelper
             "lastip" => self::hex2ip(self::zeroFill(base_convert(base_convert($nethex, 16, 10) + $available_hosts + 1, 10, 16), 8)),
             "broadcast" => self::hex2ip(self::zeroFill(base_convert(base_convert($nethex, 16, 10) + $available_hosts + 2, 10, 16), 8))
         ];
+    }
+
+    /**
+     * Search and return info about ip by ripe.net database
+     *
+     * @param string $ip, IP-adress (v4) in format: XXX.XXX.XXX.XXX
+     * @return array
+     * @throws \yii\base\InvalidConfigException
+     */
+    public static function ipLookup($ip) {
+        $client = new \yii\httpclient\Client();
+
+        $response = $client->createRequest()
+            ->setMethod('get')
+            ->setUrl('http://rest.db.ripe.net/search')
+            ->setData(['query-string' => $ip])
+            ->send();
+
+        $results = [];
+        if ($response->isOk) {
+            if (isset($response->data['objects']['object'])) {
+                $objects = $response->data['objects']['object'];
+                foreach ($objects as $object) {
+                    if (isset($object['@attributes']['type'])) {
+                        $type = $object['@attributes']['type'];
+                        if (isset($object['attributes']['attribute'])) {
+                            $attributes = $object['attributes']['attribute'];
+                            foreach ($attributes as $attribute) {
+                                if (isset($attribute['@attributes']['name']) && isset($attribute['@attributes']['value'])) {
+                                    $name = $attribute['@attributes']['name'];
+                                    $value = $attribute['@attributes']['value'];
+                                    $results[$type][$name] = $value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return($results);
     }
 
     /**
@@ -687,8 +796,7 @@ class IpAdressHelper extends BaseArrayHelper
      * @param bool $asInteger
      * @return int|string
      */
-    public static function ipMask($ip, $asInteger = false)
-    {
+    public static function ipMask($ip, $asInteger = false) {
         if (is_string($ip))
             $ip = ip2long($ip);
 
@@ -713,8 +821,7 @@ class IpAdressHelper extends BaseArrayHelper
      * @param $ip
      * @return string|null
      */
-    public static function ipVersion($ip)
-    {
+    public static function ipVersion($ip) {
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
             return "IPv4";
 
