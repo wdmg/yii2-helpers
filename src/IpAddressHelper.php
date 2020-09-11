@@ -14,11 +14,12 @@ namespace wdmg\helpers;
  *
  */
 
+use function PHPSTORM_META\type;
 use Yii;
-use yii\helpers\BaseArrayHelper;
+use yii\helpers\IpHelper;
 use yii\base\InvalidArgumentException;
 
-class IpAddressHelper extends BaseArrayHelper
+class IpAddressHelper extends IpHelper
 {
 
     const NETMASK_INFO = [
@@ -1032,54 +1033,20 @@ class IpAddressHelper extends BaseArrayHelper
     }
 
     /**
-     * Returns the netmask according to the cidr bitmask
-     *
-     * @param $bitcount integer
-     * @return string
-     */
-    public static function subnet2netmask($bitcount) {
-        $netmask = str_split(str_pad(str_pad('', $bitcount, '1'), 32, '0'), 8);
-        foreach ($netmask as &$element) {
-            $element = bindec($element);
-        }
-
-        return join('.', $netmask);
-    }
-
-    /**
-     * Calculates the network bitmask
-     *
-     * @param string | integer $netmask
-     * @return int
-     */
-    public static function netmask2bitcount($mask) {
-
-        if (is_string($mask))
-            $mask = ip2long($mask);
-
-        $base = ip2long('255.255.255.255');
-        $bitcount = 32 - log(
-                ($mask ^ $base) + 1, 2
-            );
-
-        return (int)$bitcount;
-    }
-
-    /**
      * Returns cidr by netmask
      *
-     * @param $mask string, in format: XXX.XXX.XXX.0
-     * @return integer
+     * @param string $netmask, IPv4 netmask in format: XXX.XXX.XXX.XXX
+     * @return string
      */
-    public static function netmask2cidr($mask) {
-        $bitcount = self::netmask2bitcount($mask);
-        return $mask . "/" . $bitcount;
+    public static function netmask2cidr($netmask) {
+        $bitcount = self::netmask2bitcount($netmask);
+        return $netmask . "/" . $bitcount;
     }
 
     /**
      * Returns netmask by cidr
      *
-     * @param $cidr string, in format: XXX.XXX.XXX.XXX/YY
+     * @param cidr $cidr, CIDR block in format: XXX.XXX.XXX.XXX/YY
      * @return string
      */
     public static function cidr2netmask($cidr) {
@@ -1095,11 +1062,16 @@ class IpAddressHelper extends BaseArrayHelper
     /**
      * Returns cidr by ip
      *
-     * @param string $ip, in format: XXX.XXX.XXX.XXX
-     * @param int $method, where 1 - by ripe.net ip range (all IP of current provider), 2 - by hostinfo ip range (all IP of current pool)
+     * @param string $ip, IPv4 adress in format: XXX.XXX.XXX.XXX
+     * @param string|null $netmask, IPv4 netmask in format: XXX.XXX.XXX.XXX
+     * @param int|null $method, where 1 - by ripe.net ip range (all IP of current provider), 2 - by hostinfo ip range (all IP of current pool)
      * @return string|null
      */
-    public static function ip2cidr($ip, $method = 1) {
+    public static function ip2cidr($ip, $netmask = null, $method = 1) {
+
+        if (!self::isIpv4($ip))
+            throw new InvalidArgumentException('Only IPv4 is support.');
+
         switch ($method) {
             case 1:
                 $info = self::ipLookup($ip); // by ripe.net lookup database
@@ -1108,7 +1080,10 @@ class IpAddressHelper extends BaseArrayHelper
                     if (isset($range[0]) && isset($range[1])) {
                         $start = trim($range[0]);
                         $end = trim($range[1]);
-                        $netmask = self::range2mask($start, $end);
+
+                        if (!$netmask)
+                            $netmask = self::range2mask($start, $end);
+
                         $cidr = self::netmask2bitcount($netmask);
                         return $start . "/" . $cidr;
                     }
@@ -1116,11 +1091,15 @@ class IpAddressHelper extends BaseArrayHelper
                 break;
 
             case 2:
+            default:
                 $info = self::ipInfo($ip); // by hostinfo
                 if (isset($info['network']) && isset($info['broadcast'])) {
                     $start = trim($info['network']);
                     $end = trim($info['broadcast']);
-                    $netmask = self::range2mask($start, $end);
+
+                    if (!$netmask)
+                        $netmask = self::range2mask($start, $end);
+
                     $cidr = self::netmask2bitcount($netmask);
                     return $start . "/" . $cidr;
                 }
@@ -1131,102 +1110,29 @@ class IpAddressHelper extends BaseArrayHelper
     }
 
     /**
-     * Returns a range of IP addresses included in rank (cidr)
-     *
-     * @param string $cidr, in format: XXX.XXX.XXX.XXX/YY
-     * @param bool $asObject
-     * @return array|Object, IP with mask and range of IP`s
-     */
-    public static function cidr2range($cidr, $asObject = true) {
-        $ip = explode("/", $cidr);
-        $mask = 0xFFFFFFFF;
-
-        for ($j = 0; $j < 32 - $ip[1]; $j++) {
-            $mask = $mask << 1;
-        }
-
-        $lip = ip2long($ip[0]);
-        if ($asObject) {
-            return (object)[
-                "ip" => long2ip($lip & $mask) . '/' . long2ip($mask),
-                "start" => long2ip($lip & $mask),
-                "end" => long2ip(($lip & $mask) + (~$mask))
-            ];
-        } else {
-            return [
-                long2ip($lip & $mask) . '/' . long2ip($mask),
-                long2ip($lip & $mask) . '-' . long2ip(($lip & $mask) + (~$mask))
-            ];
-        }
-    }
-
-    /**
-     * Returns an array of ranks (cidr) that include a range of IP addresses
-     *
-     * @param $ipStart string | integer, in format: XXX.XXX.XXX.XXX
-     * @param $ipEnd string | integer, in format: XXX.XXX.XXX.XXX
-     * @return array of cidr
-     */
-    public static function range2cidr($ipStart, $ipEnd) {
-
-        if (is_string($ipStart) || is_string($ipEnd)) {
-            $start = ip2long($ipStart);
-            $end = ip2long($ipEnd);
-        } else {
-            $start = $ipStart;
-            $end = $ipEnd;
-        }
-
-        $result = [];
-        while ($end >= $start) {
-            $maxSize = 32;
-
-            while ($maxSize > 0) {
-                $mask = hexdec(self::ipMask($maxSize - 1));
-                $maskBase = $start & $mask;
-
-                if ($maskBase != $start)
-                    break;
-
-                $maxSize--;
-            }
-
-            $x = log($end - $start + 1) / log(2);
-            $maxDiff = floor(32 - floor($x));
-
-            if ($maxSize < $maxDiff)
-                $maxSize = $maxDiff;
-
-            $ip = long2ip($start);
-            array_push($result, "$ip/$maxSize");
-            $start += pow(
-                2, (32 - $maxSize)
-            );
-        }
-
-        return $result;
-    }
-
-    /**
      * Returns netmask by range of IP addresses
      *
-     * @param $ipStart string | integer, in format: XXX.XXX.XXX.XXX
-     * @param $ipEnd string | integer, in format: XXX.XXX.XXX.XXX
+     * @param $start string | integer, IPv4 address in format: XXX.XXX.XXX.XXX
+     * @param $end string | integer, IPv4 address in format: XXX.XXX.XXX.XXX
      * @param bool $asInteger
      * @return int|string
      */
-    public static function range2mask($ipStart, $ipEnd, $asInteger = false) {
+    public static function range2mask($start, $end, $asInteger = false) {
 
-        if (is_string($ipStart))
-            $ipStart = ip2long($ipStart);
 
-        if (is_string($ipEnd))
-            $ipEnd = ip2long($ipEnd);
+        if (!self::isIpv4($start) || !self::isIpv4($end))
+            throw new InvalidArgumentException('Only IPv4 is support.');
+
+        if (is_string($start))
+            $start = ip2long($start);
+
+        if (is_string($end))
+            $end = ip2long($end);
 
         if ($asInteger)
-            return ($ipStart - $ipEnd) - 1;
+            return ($start - $end);
         else
-            return long2ip(($ipStart - $ipEnd) - 1);
+            return long2ip(($start - $end));
     }
 
     /**
@@ -1236,24 +1142,375 @@ class IpAddressHelper extends BaseArrayHelper
      * @param string | integer $mask subnet mask, in format: XXX.XXX.XXX.XXX
      * @return string subnet, in format: XXX.XXX.XXX.XXX
      */
-    public static function applyNetmask($ip, $mask) {
+    public static function applyNetmask($ip, $netmask) {
+
+        if (!self::isIpv4($netmask))
+            throw new InvalidArgumentException('Only IPv4 is support.');
 
         if (is_string($ip))
             $ip = ip2long($ip);
 
-        if (is_string($mask))
-            $mask = ip2long($mask);
+        if (is_string($netmask))
+            $netmask = ip2long($netmask);
 
-        return long2ip(sprintf('%u', $ip & $mask));
+        return long2ip(sprintf('%u', $ip & $netmask));
+    }
+
+
+    /**
+     * Determines if the passed netmask is valid
+     *
+     * @param string $netmask, IPv4 address in format: XXX.XXX.XXX.XXX
+     * @return bool, `true` if netmask is valid
+     */
+    public static function isValidNetmask($netmask) {
+        if (!self::isIpv4($netmask))
+            return false;
+
+        $netmask = ip2long($netmask);
+        if ($netmask === false)
+            return false;
+
+        $shift = ((~(int)$netmask) & 0xFFFFFFFF);
+        return (($shift + 1) & $shift) === 0;
+    }
+
+    /**
+     * Counting the number of set bits in a 32 bit integer
+     *
+     * @param int $long, 32 bit
+     * @return int, bitcount
+     */
+    public static function bitCount($long) {
+        $bit = ($long & 0xFFFFFFFF);
+        $bit = ($bit & 0x55555555) + (($bit >> 1) & 0x55555555);
+        $bit = ($bit & 0x33333333) + (($bit >> 2) & 0x33333333);
+        $bit = ($bit & 0x0F0F0F0F) + (($bit >> 4) & 0x0F0F0F0F);
+        $bit = ($bit & 0x00FF00FF) + (($bit >> 8) & 0x00FF00FF);
+        $bit = ($bit & 0x0000FFFF) + (($bit >> 16) & 0x0000FFFF);
+        $bit = ($bit & 0x0000003F);
+        return $bit;
+    }
+
+    /**
+     * Computes a CIDR bitcount of netmask
+     *
+     * @param string $netmask, IPv4 address in format: XXX.XXX.XXX.XXX
+     * @return int, like 22
+     */
+    public static function netmask2bitcount($netmask) {
+        if (self::isValidNetmask($netmask))
+            return self::bitCount(ip2long($netmask));
+        else
+            throw new InvalidArgumentException('The netmask is invalid.');
+    }
+
+    /**
+     * Returns the netmask according to the cidr bitmask
+     *
+     * @param integer $bitcount
+     * @return string
+     */
+    public static function cidr2mask ($bitcount) {
+        return long2ip(-1 << (32 - (int)$bitcount));
+    }
+
+    /**
+     * Returns the netmask according to the cidr bitmask
+     *
+     * @param integer $bitcount
+     * @return string
+     */
+    public static function bitcount2mask($bitcount) {
+        $netmask = str_split(str_pad(str_pad('', $bitcount, '1'), 32, '0'), 8);
+        foreach ($netmask as &$element) {
+            $element = bindec($element);
+        }
+
+        return join('.', $netmask);
+    }
+
+    /**
+     * Determines if the transmitted IP address is IPv4 version
+     *
+     * @param string $ip, IPv4 address in format: XXX.XXX.XXX.XXX
+     * @return bool, `true` if IP is IPv4
+     */
+    public static function isIpv4($ip) {
+        if (!$ip)
+            return false;
+
+        if (is_integer($ip))
+            $ip = long2ip($ip);
+
+        if (self::getIpVersion($ip, true) == "IPv4")
+            return true;
+        else
+            return false;
+    }
+
+    /**
+     * Determines if the transmitted IP address is IPv6 version
+     *
+     * @param string $ip, IPv6 address in format: XXX.XXX.XXX.XXX
+     * @return bool, `true` if IP is IPv6
+     */
+    public static function isIpv6($ip) {
+        if (!$ip)
+            return false;
+
+        if (is_long($ip))
+            $ip = inet_ntop($ip);
+
+        if (self::getIpVersion($ip, true) == "IPv6")
+            return true;
+        else
+            return false;
+    }
+
+    /**
+     * Computes the bitmask of the largest CIDR block that can contain an IP address.
+     *
+     * @param string $ip, IPv4 address in format: XXX.XXX.XXX.XXX
+     * @return int, bitmask like 8, 16 ... 32
+     */
+    public static function maxCidr($ip) {
+        if (self::isIpv4($ip))
+            return self::netmask2bitcount(long2ip(-(ip2long($ip) & -(ip2long($ip)))));
+        else
+            throw new InvalidArgumentException('Only IPv4 is support.');
+    }
+
+    /**
+     * Returns an array of cidr blocks that include a range of IP addresses
+     *
+     * Usage example:
+     * ```php
+     *  $result = IpAddressHelper::range2cidrs('172.104.89.0', '172.104.89.22');
+     * ```
+     *
+     * will be return:
+     * ```php
+     *  array(4) {
+     *      [0] => string(15) "172.104.89.0/28"
+     *      [1] => string(16) "172.104.89.16/30"
+     *      [2] => string(16) "172.104.89.20/31"
+     *      [3] => string(16) "172.104.89.22/32"
+     *  }
+     * ```
+     *
+     * @param string $start, IPv4 adress in format: XXX.XXX.XXX.XXX
+     * @param string $end, IPv4 adress in format: XXX.XXX.XXX.XXX
+     * @return array, list of cidr
+     */
+    public static function range2cidrs($start, $end) {
+
+        if (!self::isIpv4($start) || !self::isIpv4($end))
+            throw new InvalidArgumentException('The IP address must be a IPv4.');
+
+        $cidrs = [];
+        $start = ip2long($start);
+        $end = (empty($end)) ? $start : ip2long($end);
+        while ($end >= $start) {
+            $max = self::maxCidr(long2ip($start));
+            $diff = 32 - intval(log($end - $start + 1)/log(2));
+            $size = ($max > $diff) ? $max : $diff;
+            $cidrs[] = long2ip($start) . "/$size";
+            $start += pow(2, (32 - $size));
+        }
+        return $cidrs;
+    }
+
+    /**
+     * Returns a range of IP addresses included in the cidr block
+     *
+     * Usage example:
+     * ```php
+     *  $result = IpAddressHelper::cidr2range('172.104.89.0/28');
+     * ```
+     *
+     * will be return:
+     * ```php
+     *  array(2) {
+     *      [0] => string(12) "172.104.89.0"
+     *      [1] => string(13) "172.104.89.15"
+     *  }
+     * ```
+     *
+     * @param string $cidr, CIDR in format: XXX.XXX.XXX.XXX/YY
+     * @param int $format, where: 1 - as object, 2 - as detailed array, null - as array (only range)
+     * @return array|object
+     */
+    public static function cidr2range($cidr, $format = null) {
+
+        /*
+        $range = [];
+        $cidr = explode('/', $cidr);
+        $range[0] = long2ip((ip2long($cidr[0])) & ((-1 << (32 - (int)$cidr[1]))));
+        $range[1] = long2ip((ip2long($cidr[0])) + pow(2, (32 - (int)$cidr[1])) - 1);
+        return $range;
+        */
+
+        $ip = explode("/", $cidr);
+        $mask = 0xFFFFFFFF;
+
+        for ($j = 0; $j < 32 - $ip[1]; $j++) {
+            $mask = $mask << 1;
+        }
+
+        $lip = ip2long($ip[0]);
+
+        switch ($format) {
+            case 1:
+                return (object)[
+                    "ip" => long2ip($lip & $mask) . '/' . long2ip($mask),
+                    "start" => long2ip($lip & $mask),
+                    "end" => long2ip(($lip & $mask) + (~$mask))
+                ];
+                break;
+
+            case 1:
+                return [
+                    long2ip($lip & $mask) . '/' . long2ip($mask),
+                    long2ip($lip & $mask) . '-' . long2ip(($lip & $mask) + (~$mask))
+                ];
+                break;
+
+            default:
+                return [
+                    long2ip($lip & $mask),
+                    long2ip(($lip & $mask) + (~$mask))
+                ];
+                break;
+        }
+    }
+
+
+    /**
+     * Returns the closest CIDR block containing the given IP by netmask
+     *
+     * Usage example:
+     * ```php
+     *  $result = IpAddressHelper::baseCidr('172.104.89.0', '255.255.255.0');
+     * ```
+     *
+     * will be return:
+     * ```php
+     *  string(15) "172.104.89.0/24"
+     * ```
+     *
+     * @param $ip, IPv4 adress in format: XXX.XXX.XXX.XXX
+     * @param $netmask, IPv4 mask in format: XXX.XXX.XXX.XXX
+     * @return string
+     */
+    public static function ip2BaseCidr($ip, $netmask) {
+
+        if (!self::isIpv4($ip))
+            throw new InvalidArgumentException('Only IPv4 is support.');
+
+        return long2ip((ip2long($ip)) & (ip2long($netmask))) ."/". self::netmask2bitcount($netmask);
+    }
+
+    /**
+     * Checks if the specified IP address belongs to a specific CIDR block
+     *
+     * Usage example:
+     * ```php
+     *  $result = IpAddressHelper::ipInCidr('172.104.89.2', '172.104.89.0/28');
+     *  $result2 = IpAddressHelper::ipInCidr('172.104.89.2', '172.104.89.16/30');
+     * ```
+     *
+     * will be return:
+     * ```php
+     *  bool(true)
+     *  bool(false)
+     * ```
+     *
+     * @param string $ip, IPv4 adress in format: XXX.XXX.XXX.XXX
+     * @param string $cidr, CIDR block in format: XXX.XXX.XXX.XXX/YY
+     * @return bool
+     */
+    public static function ipInCidr($ip, $cidr) {
+
+        if (!self::isIpv4($ip))
+            throw new InvalidArgumentException('Only IPv4 is support.');
+
+        $cidr = explode('/',$cidr);
+        $cidr = self::ip2BaseCidr($cidr[0], self::cidr2mask((int)$cidr[1]));
+        $cidr = explode('/',$cidr);
+        $ip = (ip2long($ip));
+        $min = (ip2long($cidr[0]));
+        $max = ($min + pow(2, (32 - (int)$cidr[1])) - 1);
+        return (($min <= $ip) && ($ip <= $max));
+    }
+
+    /**
+     * Returns a CIDR block from the list belonging to the specified IP address
+     *
+     * Usage example:
+     * ```php
+     *  $result = IpAddressHelper::cidrByIp('172.104.89.19', ['172.104.89.0/28', '172.104.89.16/30', '172.104.89.20/31', '172.104.89.22/32']);
+     * ```
+     *
+     * will be return:
+     * ```php
+     *  string(16) "172.104.89.16/30"
+     * ```
+     *
+     * @param string $ip, IPv4 adress in format: XXX.XXX.XXX.XXX
+     * @param array $cidrs, CIDR block`s in format: XXX.XXX.XXX.XXX/YY
+     * @return |null
+     */
+    public static function cidrByIp($ip, $cidrs)
+    {
+
+        if (!self::isIpv4($ip))
+            throw new InvalidArgumentException('Only IPv4 is support.');
+
+        if (!is_array($cidrs) && is_string($cidrs))
+            $cidrs = [$cidrs];
+
+        foreach($cidrs as $cidr) {
+            if (self::cidrMatch($ip, $cidr)) {
+                return $cidr;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Compares if the specified IP address belongs to the given CIDR
+     *
+     * @param string|int $ip, IPv4 adress in format: XXX.XXX.XXX.XXX
+     * @param string $cidr, CIDR block in format: XXX.XXX.XXX.XXX/YY
+     * @return bool
+     */
+    public static function cidrMatch($ip, $cidr) {
+
+        if (!self::isIpv4($ip))
+            throw new InvalidArgumentException('Only IPv4 is support.');
+
+        if (is_string($ip))
+            $ip = ip2long($ip);
+
+        list ($subnet, $bits) = explode('/', $cidr);
+        $subnet = ip2long($subnet);
+        $mask = -1 << (32 - $bits);
+        $subnet &= $mask; // in case the supplied subnet was not correctly aligned
+        return ($ip & $mask) == $subnet;
     }
 
     /**
      * Determines if the IP address is local
      *
-     * @param string $ip IP-adress (v4), in format: XXX.XXX.XXX.XXX
+     * @param string $ip, IPv4 adress in format: XXX.XXX.XXX.XXX
      * @return boolean
      */
     public static function isLocalIp($ip) {
+
+        if (!self::isIpv4($ip))
+            throw new InvalidArgumentException('Only IPv4 is support.');
+
         if ('10.0.0.0' === self::applyNetmask($ip, '255.0.0.0'))
             return true;
 
@@ -1272,10 +1529,14 @@ class IpAddressHelper extends BaseArrayHelper
     /**
      * Converts IP address to HEX
      *
-     * @param $ip IP-adress (v4), in format: XXX.XXX.XXX.XXX
+     * @param string $ip, IPv4 adress in format: XXX.XXX.XXX.XXX
      * @return string
      */
     public static function ip2hex($ip) {
+
+        if (!self::isIpv4($ip))
+            throw new InvalidArgumentException('Only IPv4 is support.');
+
         $iparr = explode(".", $ip);
         foreach($iparr as $i => $group) {
             @$hex .= self::zerofill(base_convert($group,10,16),2);
@@ -1337,11 +1598,14 @@ class IpAddressHelper extends BaseArrayHelper
     /**
      * Displays complete information about the IP address by netmask
      *
-     * @param $ip, IP-adress (v4) in format: XXX.XXX.XXX.XXX
-     * @param $netmask IP-adress (v4), in format: XXX.XXX.XXX.XXX
+     * @param string $ip, IPv4 adress in format: XXX.XXX.XXX.XXX
+     * @param string $netmask, IPv4 netmask in format: XXX.XXX.XXX.XXX
      * @return array
      */
     public static function ipInfo($ip, $netmask = null) {
+
+        if (!self::isIpv4($ip))
+            throw new InvalidArgumentException('Only IPv4 is support.');
 
         if (!$netmask)
             $netmask = self::ipMask($ip);
@@ -1378,6 +1642,10 @@ class IpAddressHelper extends BaseArrayHelper
      * @throws \yii\base\InvalidConfigException
      */
     public static function ipLookup($ip) {
+
+        if (!self::isIpv4($ip))
+            throw new InvalidArgumentException('Only IPv4 is support.');
+
         $client = new \yii\httpclient\Client();
 
         $response = $client->createRequest()
@@ -1476,6 +1744,10 @@ class IpAddressHelper extends BaseArrayHelper
      * @return int|string
      */
     public static function ipMask($ip, $asInteger = false) {
+
+        if (!self::isIpv4($ip))
+            throw new InvalidArgumentException('Only IPv4 is support.');
+
         if (is_string($ip))
             $ip = ip2long($ip);
 
@@ -1495,19 +1767,46 @@ class IpAddressHelper extends BaseArrayHelper
     }
 
     /**
+     * Checks if the string is a valid in_addr representation of an IPv4 / IPv6 address.
+     *
+     * @param string $packed
+     * @return bool, `true` if is valid packed ip of IPv4 or IPv6
+     */
+    public static function isValidPackedIP($packed) {
+
+        $ip = @inet_ntop($packed);
+        if ($ip !== false)
+            return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4|FILTER_FLAG_IPV6) !== false;
+
+        return false;
+    }
+    
+    /**
      * Specifies the IPv4 or IPv6 IP version
      *
-     * @param $ip
-     * @return string|null
+     * @param $ip, IP address
+     * @return int|string|null
      */
-    public static function ipVersion($ip) {
-        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
-            return "IPv4";
+    public static function getIpVersion($ip, $asString = false, $validate = false) {
 
-        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
-            return "IPv6";
+        if (is_integer($ip))
+            $ip = long2ip($ip);
+        elseif (self::isValidPackedIP($ip))
+            $ip = inet_ntop($ip);
 
-        return null;
+        if ($validate) {
+            if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
+                return ($asString) ? "IPv4" : 4;
+
+            if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
+                return ($asString) ? "IPv6" : 6;
+
+        } else {
+            if ($asString)
+                return (parent::getIpVersion($ip) == 4) ? "IPv4" : ((parent::getIpVersion($ip) == 6) ? "IPv6" : null);
+            else
+                return parent::getIpVersion($ip);
+        }
     }
 
     /**
@@ -1518,13 +1817,42 @@ class IpAddressHelper extends BaseArrayHelper
      */
     public static function getNetmaskInfo($mask = null) {
         if ($mask) {
+            $results = [];
             foreach (self::NETMASK_INFO as $key => $info) {
-                if (($info['mask'] === $mask) || ($info['mask'].'00' === $mask)) {
-                    return $info;
+                if (($info['mask'] === $mask) || ($info['mask'].'00' === $mask) || self::applyNetmask($mask, $info['mask'])) {
+                    $results[] = $info;
                 }
             }
+            return $results;
         }
         return self::NETMASK_INFO;
+    }
+
+    /**
+     * @param null $mask
+     * @return array
+     */
+    public static function getCidrs($mask = null) {
+        $cidrs = [];
+        $netmasks = self::getNetmaskInfo($mask);
+        foreach ($netmasks as $netmask) {
+            $cidrs[] = $netmask['mask']."/".$netmask['bitcount']; // XXX.XXX.XXX.XXX/YY
+        }
+        return $cidrs;
+    }
+
+    /**
+     * @param null $mask
+     * @return array
+     */
+    public static function getRanges($mask = null) {
+        $ranges = [];
+        $netmasks = self::getNetmaskInfo($mask);
+        foreach ($netmasks as $netmask) {
+            $range = self::cidr2range($netmask['mask']."/".$netmask['bitcount'], false);
+            $ranges[] = $range[1]; // XXX.XXX.XXX.XXX-XXX.XXX.XXX.XXX
+        }
+        return $ranges;
     }
 
     /**

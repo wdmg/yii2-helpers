@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## 1.3.*
+ * IP/CIDR common methods
+ * Whois service
+ 
 ## 1.3.5 (2020-09-08)
  * IpAddressHelper fixed
  
