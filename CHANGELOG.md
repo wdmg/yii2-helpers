@@ -2,17 +2,19 @@ Changelog
 =========
 
 ## 1.3.*
- * IP/CIDR common methods
- * Whois service
+ * Added IPv6 methods in `IpAddressHelper`
+ * Added `ArrayHelper::unique()` method
+ * Added IP/CIDR common methods in `IpAddressHelper`
+ * Whois service in `IpAddressHelper`
  
 ## 1.3.5 (2020-09-08)
- * IpAddressHelper fixed
+ * `IpAddressHelper` fixed
  
 ## 1.3.4 (2020-09-04)
- * Added IpAddressHelper
+ * Added `IpAddressHelper`
  
 ## 1.3.3 (2020-05-16)
- * Added buildTree() method to ArrayHelper
+ * Added `ArrayHelper::buildTree()`
 
 ## 1.3.2 (2020-03-26)
  * Up to date dependencies

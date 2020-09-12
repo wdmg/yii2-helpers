@@ -138,6 +138,20 @@ class ArrayHelper extends BaseArrayHelper
         }
     }
 
+    public static function unique($array, $columns = null) {
+        list($keys, $temp) = [[],[]];
+        foreach ($array as $key => $data) {
+            // Stored only new array items
+            if (!in_array($data, $temp)) {
+                $temp[$key] = $data;
+
+                // ...and key has been selected
+                $keys[$key] = true;
+            }
+        }
+        return array_intersect_key($array, $keys);
+    }
+
     public static function crossMerging($array1, $array2, $count1 = null, $count2 = null) {
         $i = 0;
         $j = 0;
