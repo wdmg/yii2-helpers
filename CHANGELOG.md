@@ -1,7 +1,8 @@
 Changelog
 =========
 
-## 1.3.*
+## 1.3.6 (2020-09-18)
+ * Fixed CIDR methods
  * Added IPv6 methods in `IpAddressHelper`
  * Added `ArrayHelper::unique()` method
  * Added IP/CIDR common methods in `IpAddressHelper`

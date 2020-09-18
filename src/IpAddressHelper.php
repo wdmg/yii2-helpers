@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 IP address helper
  *
  * @category        Helpers
- * @version         1.3.5
+ * @version         1.3.6
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>, Jonavon Wilcox <jonavon@gmail.com>, Manuel Kasper <mk@neon1.net>
  * @see             https://gist.github.com/stibiumz/5e6a92a195c50c875649, https://gist.github.com/jonavon/2028872, http://m0n0.ch/wall, https://www.experts-exchange.com/questions/23903322/Need-PHP-code-for-calculating-subnets.html
  * @link            https://github.com/wdmg/yii2-helpers
@@ -1131,9 +1131,9 @@ class IpAddressHelper extends IpHelper
             $end = ip2long($end);
 
         if ($asInteger)
-            return ($start - $end);
+            return ($start - $end) - 1;
         else
-            return long2ip(($start - $end));
+            return long2ip(($start - $end) - 1);
     }
 
     /**
@@ -1443,6 +1443,46 @@ class IpAddressHelper extends IpHelper
         $min = (ip2long($cidr[0]));
         $max = ($min + pow(2, (32 - (int)$cidr[1])) - 1);
         return (($min <= $ip) && ($ip <= $max));
+    }
+
+    /**
+     * Checks if the specified IP address belongs to a specific range of IP`s
+     *
+     * Usage example:
+     * ```php
+     *  $result = IpAddressHelper::ipInRange('172.104.89.2', '172.104.89.0', '172.104.89.20');
+     *  $result2 = IpAddressHelper::ipInRange('172.104.89.2', '172.104.89.20', '172.104.89.64');
+     * ```
+     *
+     * will be return:
+     * ```php
+     *  bool(true)
+     *  bool(false)
+     * ```
+     *
+     * @param string $ip, IPv4 adress in format: XXX.XXX.XXX.XXX
+     * @param $start, IPv4 adress in format: XXX.XXX.XXX.XXX
+     * @param $end, IPv4 adress in format: XXX.XXX.XXX.XXX
+     * @return bool
+     */
+    public static function ipInRange($ip, $start, $end) {
+
+        if (!self::isIpv4($ip))
+            throw new InvalidArgumentException('Only IPv4 is support.');
+
+        // Check if the $ip begins with $start and ends before $end
+        if (($ip == $start) && self::ipLess($ip, $end))
+            return true;
+
+        // Check if the $ip ends at $end and starts after $start
+        if (self::ipGreater($ip, $start) && ($ip == $end))
+            return true;
+
+        // Check if the $ip is between $start and $end
+        if (self::ipGreater($ip, $start) && self::ipLess($ip, $end))
+            return true;
+
+        return false;
     }
 
     /**

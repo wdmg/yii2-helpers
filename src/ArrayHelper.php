@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 Custom array helper
  *
  * @category        Helpers
- * @version         1.3.5
+ * @version         1.3.6
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2020 W.D.M.Group, Ukraine
@@ -139,17 +139,33 @@ class ArrayHelper extends BaseArrayHelper
     }
 
     public static function unique($array, $columns = null) {
-        list($keys, $temp) = [[],[]];
-        foreach ($array as $key => $data) {
-            // Stored only new array items
-            if (!in_array($data, $temp)) {
-                $temp[$key] = $data;
+        list($temp, $data) = [[],[]];
+        foreach ($array as $key => $row) {
 
-                // ...and key has been selected
-                $keys[$key] = true;
+            if (is_array($columns)) {
+                foreach ($columns as $column) {
+                    if (isset($row[$column])) {
+                        if (!in_array($row[$column], $data)) {
+                            $data[] = $row[$column];
+                            $temp[$key] = $row;
+                        }
+                    }
+                }
+            } else if (is_string($columns) && isset($row[$columns])) {
+                if (!in_array($row[$columns], $data)) {
+                    $data[] = $row[$columns];
+                    $temp[$key] = $row;
+                }
             }
         }
-        return array_intersect_key($array, $keys);
+
+        if (empty($temp) && !$columns) {
+            return array_unique($array, SORT_REGULAR);
+        } else {
+            $array = $temp;
+            unset($temp, $data);
+            return $array;
+        }
     }
 
     public static function crossMerging($array1, $array2, $count1 = null, $count2 = null) {
