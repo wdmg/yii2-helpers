@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## 1.3.*
+ * Added `DbSchemaTrait` for migrations
+ * Added `ArrayHelper::diff()` method
+ 
 ## 1.3.6 (2020-09-18)
  * Fixed CIDR methods
  * Added IPv6 methods in `IpAddressHelper`

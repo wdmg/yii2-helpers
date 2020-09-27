@@ -168,6 +168,42 @@ class ArrayHelper extends BaseArrayHelper
         }
     }
 
+    public static function diff($array1, $array2) {
+        $array = [];
+
+        if (!is_array($array1)) {
+            throw new InvalidArgumentException('The `$array1` argument must be array.');
+            return null;
+        }
+
+        if (!is_array($array2)) {
+            throw new InvalidArgumentException('The `$array2` argument must be array.');
+            return null;
+        }
+
+        foreach ($array1 as $key => $value) {
+            if (array_key_exists($key, $array2)) {
+                if (is_array($value)) {
+
+                    $diff = self::diff($value, $array2[$key]);
+
+                    if (count($diff))
+                        $array[$key] = $diff;
+
+                } else {
+
+                    if ($value != $array2[$key])
+                        $array[$key] = $value;
+
+                }
+            } else {
+                $array[$key] = $value;
+            }
+        }
+        
+        return $array;
+    }
+
     public static function crossMerging($array1, $array2, $count1 = null, $count2 = null) {
         $i = 0;
         $j = 0;
