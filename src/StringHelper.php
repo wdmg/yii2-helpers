@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 short integer helper
  *
  * @category        Helpers
- * @version         1.3.6
+ * @version         1.4.0
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2020 W.D.M.Group, Ukraine
@@ -20,6 +20,14 @@ use yii\base\InvalidArgumentException;
 
 class StringHelper extends BaseStringHelper
 {
+    /**
+     * Formats the text ending of a numeric value
+     *
+     * @param $input
+     * @param int $decimals
+     * @param bool $uppercase
+     * @return string
+     */
     public static function integerAmount($input, $decimals = 2, $uppercase = false) {
 
         static::initI18N('app/helpers');
@@ -43,7 +51,14 @@ class StringHelper extends BaseStringHelper
         }
     }
 
-
+    /**
+     * Cuts (replaces) html entities from a substring
+     *
+     * @param $input
+     * @param string $tags
+     * @param string $replacement
+     * @return mixed|string|string[]|null
+     */
     public static function stripTags($input, $tags = "a|strong|b|p", $replacement = '') {
 
         static::initI18N('app/helpers');
@@ -73,6 +88,16 @@ class StringHelper extends BaseStringHelper
         return $input;
     }
 
+    /**
+     * Truncates a string to a given length without truncating words
+     *
+     * @param $input
+     * @param int $start
+     * @param int $end
+     * @param bool $cut
+     * @param string $ending
+     * @return string|null
+     */
     public static function stringShorter($input, $start = 55, $end = 0, $cut = true, $ending = '…') {
 
         static::initI18N('app/helpers');
@@ -99,7 +124,16 @@ class StringHelper extends BaseStringHelper
         return $input;
     }
 
-    private static function mb_wordwrap($str, $length = 75, $break = "\n", $cut = false) {
+    /**
+     * Splits a string into substrings with a string termination
+     *
+     * @param $str
+     * @param int $length
+     * @param string $break
+     * @param bool $cut
+     * @return string
+     */
+    public static function mb_wordwrap($str, $length = 75, $break = "\n", $cut = false) {
         $lines = explode($break, $str);
         foreach ($lines as &$line) {
             $line = rtrim($line);

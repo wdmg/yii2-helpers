@@ -1,7 +1,8 @@
 Changelog
 =========
 
-## 1.3.*
+## 1.4.0 (2020-10-04)
+ * Added `KeyboardLayoutHelper`
  * Added `DbSchemaTrait` for migrations
  * Added `ArrayHelper::diff()` method
  

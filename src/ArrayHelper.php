@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 Custom array helper
  *
  * @category        Helpers
- * @version         1.3.6
+ * @version         1.4.0
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2020 W.D.M.Group, Ukraine
@@ -21,6 +21,15 @@ use yii\base\InvalidArgumentException;
 class ArrayHelper extends BaseArrayHelper
 {
 
+    /**
+     * Returns the path to the parent array and the child array key (separated by a separator) where the search was found
+     *
+     * @param $needle
+     * @param array $array
+     * @param string $delimiter
+     * @param bool $searchByKeys
+     * @return bool|int|string
+     */
     public static function getParents($needle, $array = [], $delimiter = '.', $searchByKeys = true) {
         foreach ($array as $key => $value) {
 
@@ -37,6 +46,14 @@ class ArrayHelper extends BaseArrayHelper
         return false;
     }
 
+    /**
+     * Forms an array of values from CSV data for subsequent import
+     *
+     * @param null $data
+     * @param null $delimiter
+     * @param bool $withColumns
+     * @return array
+     */
     public static function importCSV($data = null, $delimiter = null, $withColumns = false) {
 
         if (is_null($delimiter))
@@ -97,6 +114,15 @@ class ArrayHelper extends BaseArrayHelper
         return $array;
     }
 
+    /**
+     * Forms CSV string data from an array of values for subsequent export
+     *
+     * @param null $array
+     * @param string $columns
+     * @param null $delimiter
+     * @param bool $withColumns
+     * @return string|null
+     */
     public static function exportCSV($array = null, $columns = "*", $delimiter = null, $withColumns = false) {
         if (is_array($array)) {
 
@@ -138,7 +164,20 @@ class ArrayHelper extends BaseArrayHelper
         }
     }
 
+    /**
+     * Uniqueizes a multidimensional array, including specifying a key for uniqueizing values
+     *
+     * @param $array
+     * @param null $columns
+     * @return array|mixed
+     */
     public static function unique($array, $columns = null) {
+
+        if (!is_array($array)) {
+            throw new InvalidArgumentException('The `$array` argument must be array.');
+            return null;
+        }
+
         list($temp, $data) = [[],[]];
         foreach ($array as $key => $row) {
 
@@ -168,6 +207,13 @@ class ArrayHelper extends BaseArrayHelper
         }
     }
 
+    /**
+     * Returns the differences of multidimensional arrays.
+     *
+     * @param $array1
+     * @param $array2
+     * @return array|null
+     */
     public static function diff($array1, $array2) {
         $array = [];
 
@@ -204,6 +250,15 @@ class ArrayHelper extends BaseArrayHelper
         return $array;
     }
 
+    /**
+     * Merges multidimensional arrays.
+     *
+     * @param $array1
+     * @param $array2
+     * @param null $count1
+     * @param null $count2
+     * @return array|null
+     */
     public static function crossMerging($array1, $array2, $count1 = null, $count2 = null) {
         $i = 0;
         $j = 0;
@@ -228,24 +283,39 @@ class ArrayHelper extends BaseArrayHelper
 
         // Traverse both array
         while ($i < $count1 && $j < $count2) {
-            $array[$k++] = $array1[$i++];
-            $array[$k++] = $array2[$j++];
+            if (isset($array1[$i++]))
+                $array[$k++] = $array1[$i++];
+
+            if (isset($array2[$j++]))
+                $array[$k++] = $array2[$j++];
         }
 
         // Store remaining elements of first array
         while ($i < $count1) {
-            $array[$k++] = $array1[$i++];
+            if (isset($array1[$i++]))
+                $array[$k++] = $array1[$i++];
         }
 
         // Store remaining elements of second array
         while($j < $count2) {
-            $array[$k++] = $array2[$j++];
+            if (isset($array2[$j++]))
+                $array[$k++] = $array2[$j++];
         }
 
         return $array;
 
     }
 
+    /**
+     * Builds an array tree from heirs by keys ʻitems` and `parent_id`
+     *
+     * @param array $array
+     * @param int $parentId
+     * @param string $parentKey
+     * @param string $childsKey
+     * @param int $level
+     * @return array
+     */
     public static function buildTree(&$array = [], $parentId = 0, $parentKey = 'parent_id', $childsKey = 'items', $level = 1) {
         $tree = array();
         foreach ($array as &$item) {

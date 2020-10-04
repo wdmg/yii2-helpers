@@ -4,7 +4,7 @@
 ![Progress](https://img.shields.io/badge/progress-ready_to_use-green.svg)
 [![GitHub license](https://img.shields.io/github/license/wdmg/yii2-helpers.svg)](https://github.com/wdmg/yii2-helpers/blob/master/LICENSE)
 
-<img src="./docs/images/yii2-helpers.png" width="100%" alt="Yii2 Composite Forms" />
+<img src="./docs/images/yii2-helpers.png" width="100%" alt="Custom helpers for Yii2" />
 
 # Yii2 Helpers
 Custom helpers for Yii2
@@ -18,59 +18,8 @@ To install the helpers, run the following command in the console:
 
 `$ composer require "wdmg/yii2-helpers"`
 
-# Usage
-An example of a standalone time difference widget:
-
-    <?php
-    
-        use wdmg\helpers\DateAndTime;
-        ...
-        
-        echo DateAndTime::diff($data->updated_at, null, [
-            'layout' => '<small class="pull-right {class}">[ {datetime} ]</small>',
-            'inpastClass' => 'text-danger', // Class for datediff in past time
-            'futureClass' => 'text-success', // Class for datediff in future time
-        ]);
-    
-    ?>
-    
-Example of integer amount to string:
-
-    <?php
-    
-        use wdmg\helpers\StringHelper;
-        ...
-        
-        echo StringHelper::integerAmount('1256', 2, true) . "<br/>";
-        // 1,25K
-        
-        echo StringHelper::integerAmount('125763', 2, true) . "<br/>";
-        // 125,76K
-        
-        echo StringHelper::integerAmount('2525763', 2, false) . "<br/>";
-        // 2,52 mill.
-        
-        echo StringHelper::integerAmount('1432525763', 2, false) . "<br/>";
-        // 1,43 bill.
-    
-    ?>
-    
-Example of string trim including full words:
-
-    <?php
-    
-        use wdmg\helpers\StringHelper;
-        ...
-        
-        echo StringHelper::stringShorter('Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.', 55, 0) . "<br/>";
-        // Lorem ipsum dolor sit amet, consectetuer adipiscing…
-        
-        echo StringHelper::stringShorter('Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.', 55, 25) . "<br/>";
-        // Lorem ipsum dolor sit amet, consectetuer adipiscing… ex ea commodo consequat.
-    
-    ?>
-
 # Status and version [ready to use]
+* v.1.4.0 - Added `KeyboardLayoutHelper` and `DbSchemaTrait` for migrations
 * v.1.3.6 - Fixed CIDR methods. Added IPv6 methods in `IpAddressHelper`
 * v.1.3.5 - IpAddressHelper fixed
 * v.1.3.4 - Added IpAddressHelper

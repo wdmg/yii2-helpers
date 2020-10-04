@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 IP address helper
  *
  * @category        Helpers
- * @version         1.3.6
+ * @version         1.4.0
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>, Jonavon Wilcox <jonavon@gmail.com>, Manuel Kasper <mk@neon1.net>
  * @see             https://gist.github.com/stibiumz/5e6a92a195c50c875649, https://gist.github.com/jonavon/2028872, http://m0n0.ch/wall, https://www.experts-exchange.com/questions/23903322/Need-PHP-code-for-calculating-subnets.html
  * @link            https://github.com/wdmg/yii2-helpers
@@ -1157,7 +1157,6 @@ class IpAddressHelper extends IpHelper
         return long2ip(sprintf('%u', $ip & $netmask));
     }
 
-
     /**
      * Determines if the passed netmask is valid
      *
@@ -1726,6 +1725,81 @@ class IpAddressHelper extends IpHelper
         }
 
         return($results);
+    }
+
+    /**
+     * @return array|null
+     */
+    public static function getArpTable() {
+
+        $results = [];
+        exec('arp -an', $output);
+        foreach ($output as $line) {
+            preg_match('/((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])/i', $line, $match);
+            $ip = (isset($match[0]) ? $match[0] : null); // ip
+
+            preg_match('/(([a-fA-F0-9]{1,2}\:){5}[a-fA-F0-9]{2})/i', $line, $match);
+            $mac = (isset($match[0]) ? $match[0] : null); // mac
+
+            preg_match('/on\s+(.+)\[/i', $line, $match);
+            $scope = (isset($match[1]) ? $match[1] : null); // scope
+
+            preg_match('/\[(\w+)\]/i', $line, $match);
+            $interface = (isset($match[1]) ? $match[1] : null); // interface
+
+            $results[] = [
+                'ip' => $ip,
+                'mac' => $mac,
+                'scope' => $scope,
+                'interface' => $interface,
+            ];
+        }
+
+        return (!empty($results)) ? $results : null;
+    }
+
+    /**
+     * @param $address
+     * @return bool|mixed
+     */
+    public static function ipMacLookup($address) {
+        if ($table = self::getArpTable()) {
+            foreach ($table as $item) {
+                if ($item['ip'] == $address || $item['mac'] == $address)
+                    return $item;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $address
+     * @param string $separator
+     * @return mixed|string|string[]|null
+     */
+    public static function formatMAC($address, $separator = ':') {
+
+        if (preg_match('/^([a-fA-F0-9]{1,2}\:){5}[a-fA-F0-9]{1,2}$/is', $address)) // 70:EF:00:85:36:A9
+            return str_replace(':', $separator, $address);
+        elseif (preg_match('/^([a-fA-F0-9]{1,2}[\:]{2}){5}[a-fA-F0-9]{1,2}$/is', $address)) // 70::EF::00::85::36::A9
+            return str_replace('::', $separator, $address);
+        elseif (preg_match('/^([a-fA-F0-9]{1,2}[\:]{1,2}){5}[a-fA-F0-9]{1,2}$/is', $address)) // 70:EF::00:85::36:A9
+            return preg_replace('/[\:]{1,2}/is', $separator, $address);
+        elseif (preg_match('/^([a-fA-F0-9]{1,2}\-){5}[a-fA-F0-9]{1,2}$/is', $address)) // 70-EF-00-85-36-A9
+            return str_replace('-', $separator, $address);
+        elseif (preg_match('/^([a-fA-F0-9]{2})/is', $address)) // 70EF008536A9
+            return rtrim(chunk_split($address, 2, $separator), $separator);
+
+        return $address;
+    }
+
+    /**
+     * @param $address
+     * @return bool
+     */
+    public static function isValidMAC($address) {
+        return (false === filter_var($address, FILTER_VALIDATE_MAC)) ? false : true;
     }
 
     /**
