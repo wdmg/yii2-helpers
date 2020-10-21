@@ -222,7 +222,7 @@ class StringHelper extends BaseStringHelper
         if (!is_string($string) || empty($string))
             return false;
 
-        if (preg_match("/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/", $value))
+        if (preg_match("/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/", $string))
             return (filter_var($string, FILTER_VALIDATE_URL));
 
         return false;
@@ -279,7 +279,7 @@ class StringHelper extends BaseStringHelper
         if (!is_string($string) || empty($string))
             return false;
 
-        if (preg_match('^([-]?[1-9]?[0-9]\.\d+|[-]?90\.0+?)(.)([-]?1[0-7][0-9]\.\d+|[-]?[1-9]?[0-9]\.\d+|[-]?180\.0+?)$', $string))
+        if (preg_match('/^([-]?[1-9]?[0-9]\.\d+|[-]?90\.0+?)(.)([-]?1[0-7][0-9]\.\d+|[-]?[1-9]?[0-9]\.\d+|[-]?180\.0+?)$/', $string))
             return true;
 
         return false;
