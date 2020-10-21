@@ -19,6 +19,7 @@ To install the helpers, run the following command in the console:
 `$ composer require "wdmg/yii2-helpers"`
 
 # Status and version [ready to use]
+* v.1.4.1 - Added string detection methods to `StringHelper`
 * v.1.4.0 - Added `KeyboardLayoutHelper` and `DbSchemaTrait` for migrations
 * v.1.3.6 - Fixed CIDR methods. Added IPv6 methods in `IpAddressHelper`
 * v.1.3.5 - IpAddressHelper fixed

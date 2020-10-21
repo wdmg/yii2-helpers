@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 short integer helper
  *
  * @category        Helpers
- * @version         1.4.0
+ * @version         1.4.1
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2020 W.D.M.Group, Ukraine
@@ -122,6 +122,167 @@ class StringHelper extends BaseStringHelper
         }
 
         return $input;
+    }
+
+    /**
+     * Checks if a string is a serialized data
+     *
+     * @param $string
+     * @return bool, `true` if string is serialized data
+     */
+    public static function is_serialized($string) {
+
+        if (!is_string($string) || empty($string))
+            return false;
+
+        $string = trim($string);
+        if ('N;' == $string)
+            return true;
+
+        if (!preg_match('/^([adObis]):/', $string, $matches))
+            return false;
+
+        switch ($matches[1]) {
+            case 'a' :
+            case 'O' :
+            case 's' :
+                if (preg_match("/^{$matches[1]}:[0-9]+:.*[;}]\$/s", $string))
+                    return true;
+
+                break;
+            case 'b' :
+            case 'i' :
+            case 'd' :
+                if (preg_match("/^{$matches[1]}:[0-9.E-]+;\$/", $string))
+                    return true;
+
+                break;
+            default:
+                return false;
+        }
+
+    }
+
+    /**
+     * Checks if a string is a json data
+     *
+     * @param $string
+     * @return bool, `true` if string is json data
+     */
+    public static function is_json($string) {
+
+        if (!is_string($string) || empty($string))
+            return false;
+
+        return !preg_match('/[^,:{}\\[\\]0-9.\\-+Eaeflnr-u \\n\\r\\t]/', preg_replace('/"(\\.|[^"\\\\])*"/', '', $string));
+    }
+
+    /**
+     * Checks if a string is a regex pattern
+     *
+     * @param $string
+     * @return bool, `true` if string is regex pattern
+     */
+    public static function is_regexp($string) {
+
+        if (!is_string($string) || empty($string))
+            return false;
+
+        if (preg_match("/^\/[\s\S]+\/[a-zA-Z]{0,6}+$/", $string))
+            return true;
+
+        return false;
+    }
+
+    /**
+     * Checks if a string is a domain name
+     *
+     * @param $string
+     * @return bool|mixed, `true` if string is domain name
+     */
+    public static function is_domain($string) {
+
+        if (!is_string($string) || empty($string))
+            return false;
+
+        if (preg_match("/^[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})$/", $string))
+            return (filter_var($string, FILTER_VALIDATE_DOMAIN));
+
+        return false;
+    }
+
+    /**
+     * Checks if a string is a URL address
+     *
+     * @param $string
+     * @return bool|mixed, `true` if string is URL address
+     */
+    public static function is_url($string) {
+
+        if (!is_string($string) || empty($string))
+            return false;
+
+        if (preg_match("/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/", $value))
+            return (filter_var($string, FILTER_VALIDATE_URL));
+
+        return false;
+    }
+
+    /**
+     * Checks if a string is a Email address
+     *
+     * @param $string
+     * @return bool|mixed, `true` if string is Email address
+     */
+    public static function is_email($string) {
+
+        if (!is_string($string) || empty($string))
+            return false;
+
+        return (filter_var($string, FILTER_VALIDATE_EMAIL));
+    }
+
+    /**
+     * @param $string
+     * @return bool|mixed, `true` if string is IP address
+     */
+    public static function is_ip($string) {
+
+        if (!is_string($string) || empty($string))
+            return false;
+
+        return (filter_var($string, FILTER_VALIDATE_IP));
+    }
+
+    /**
+     * Checks if a string is a MAC address
+     *
+     * @param $string
+     * @return bool|mixed, `true` if string is MAC address
+     */
+    public static function is_mac($string) {
+
+        if (!is_string($string) || empty($string))
+            return false;
+
+        return (filter_var($string, FILTER_VALIDATE_MAC));
+    }
+
+    /**
+     * Checks if a string is a geo address
+     *
+     * @param $string
+     * @return bool|mixed, `true` if string is GEO location (lat/lng) address
+     */
+    public static function is_geo($string) {
+
+        if (!is_string($string) || empty($string))
+            return false;
+
+        if (preg_match('^([-]?[1-9]?[0-9]\.\d+|[-]?90\.0+?)(.)([-]?1[0-7][0-9]\.\d+|[-]?[1-9]?[0-9]\.\d+|[-]?180\.0+?)$', $string))
+            return true;
+
+        return false;
     }
 
     /**

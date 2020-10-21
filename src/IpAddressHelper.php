@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 IP address helper
  *
  * @category        Helpers
- * @version         1.4.0
+ * @version         1.4.1
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>, Jonavon Wilcox <jonavon@gmail.com>, Manuel Kasper <mk@neon1.net>
  * @see             https://gist.github.com/stibiumz/5e6a92a195c50c875649, https://gist.github.com/jonavon/2028872, http://m0n0.ch/wall, https://www.experts-exchange.com/questions/23903322/Need-PHP-code-for-calculating-subnets.html
  * @link            https://github.com/wdmg/yii2-helpers
