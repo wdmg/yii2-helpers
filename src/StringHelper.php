@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 short integer helper
  *
  * @category        Helpers
- * @version         1.4.1
+ * @version         1.4.2
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2020 W.D.M.Group, Ukraine
@@ -122,6 +122,33 @@ class StringHelper extends BaseStringHelper
         }
 
         return $input;
+    }
+
+    /**
+     * Generate UUID (Universally Unique Identifier) string based on format and lenght
+     *
+     * @param int $lenght
+     * @param string $format
+     * @param bool $upperCase
+     * @return bool|string|null
+     * @throws \Exception
+     */
+    public static function genUUID($lenght = 32, $format = '%s%s-%s%s-%s%s-%s-%s', $upperCase = true) {
+
+        if (!is_integer($lenght))
+            return null;
+
+        $data = PHP_MAJOR_VERSION < 7 ? openssl_random_pseudo_bytes(16) : random_bytes(16);
+        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);    // Set version to 0100
+        $data[8] = chr(ord($data[8]) & 0x3f | 0x80);    // Set bits 6-7 to 10
+        $base = bin2hex($data);
+        $uuid = substr(($upperCase) ? strtoupper($base) : $base, 0, ($lenght > 32) ? 32 : $lenght);
+
+        if ($format)
+            return vsprintf($format, str_split($uuid, 4));
+        else
+            return $uuid;
+
     }
 
     /**
@@ -283,6 +310,36 @@ class StringHelper extends BaseStringHelper
             return true;
 
         return false;
+    }
+
+    /**
+     * Converts string of size to bytes in integer
+     *
+     * @param string $filesize $size of file with suffix, like: 10Kb, 10M, 2Gb
+     * @return int
+     */
+    public static function sizeToBytes($size) {
+        switch (\mb_strtolower(\preg_replace('/\PL/u', '', \mb_substr($size, -2)))) {
+
+            case 'k':
+            case 'kb':
+                return (int)$size * 1024;
+
+            case 'm':
+            case 'mb':
+                return (int)$size * 1048576;
+
+            case 'g':
+            case 'gb':
+                return (int)$size * 1073741824;
+
+            case 't':
+            case 'tb':
+                return (int)$size * 1099511627776;
+
+            default:
+                return (int)$size;
+        }
     }
 
     /**

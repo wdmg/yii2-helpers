@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## 1.4.2 (2020-12-15)
+ * Added `genUUID()` methods to `StringHelper`
+   
 ## 1.4.1 (2020-10-21)
  * Added `is_ip()`, `is_email()`, `is_mac()`, `is_serialized()`, `is_json()`, `is_geo()`, `is_domain()`, 
    `is_url()`, `is_regexp()` methods to `StringHelper`
