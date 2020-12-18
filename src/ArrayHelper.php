@@ -336,4 +336,35 @@ class ArrayHelper extends BaseArrayHelper
         }
         return $tree;
     }
+
+
+    /**
+     * Flatten a multidimensional array on a child key ʻitems` and sets of parent key id
+     *
+     * @param array $array
+     * @param string $childsKey
+     * @param string $parentKey
+     * @return array
+     */
+    public static function flattenTree($array = [], $childsKey = 'items', $parentKey = 'parent_id') {
+        $flatten = [];
+        foreach ($array as $key => $object) {
+
+            // Separate its children
+            $children = isset($object[$childsKey]) ? $object[$childsKey] : [];
+            unset($object[$childsKey]);
+
+            // And add it to the output array
+            $flatten[] = $object;
+
+            // Recursively flatten the array of children
+            $children = self::flattenTree($children, $parentKey, $childsKey);
+            foreach ($children as $child) {
+                $child[$parentKey] = array_key_last($flatten);
+                $flatten[] = $child;
+            }
+        }
+        return $flatten;
+    }
+
 }

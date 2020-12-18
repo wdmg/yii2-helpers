@@ -1,7 +1,8 @@
 Changelog
 =========
 
-## 1.4.2 (2020-12-15)
+## 1.4.2 (2020-12-18)
+ * Added `flattenTree()` methods to `ArrayHelper`
  * Added `genUUID()` methods to `StringHelper`
    
 ## 1.4.1 (2020-10-21)
