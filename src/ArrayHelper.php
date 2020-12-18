@@ -358,7 +358,7 @@ class ArrayHelper extends BaseArrayHelper
             $flatten[] = $object;
 
             // Recursively flatten the array of children
-            $children = self::flattenTree($children, $parentKey, $childsKey);
+            $children = self::flattenTree($children, $childsKey, $parentKey);
             foreach ($children as $child) {
                 $child[$parentKey] = array_key_last($flatten);
                 $flatten[] = $child;
