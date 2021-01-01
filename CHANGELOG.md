@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## 1.4.3 (2021-01-01)
+ * Added `keyFirst()` and `keyLast()` methods to `ArrayHelper`
+ 
 ## 1.4.2 (2020-12-18)
  * Added `flattenTree()` methods to `ArrayHelper`
  * Added `genUUID()` methods to `StringHelper`

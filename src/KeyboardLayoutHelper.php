@@ -6,10 +6,10 @@ namespace wdmg\helpers;
  * Yii2 keyboard layout helper
  *
  * @category        Helpers
- * @version         1.4.2
+ * @version         1.4.3
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
- * @copyright       Copyright (c) 2019 - 2020 W.D.M.Group, Ukraine
+ * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine
  * @license         https://opensource.org/licenses/MIT Massachusetts Institute of Technology (MIT) License
  *
  */

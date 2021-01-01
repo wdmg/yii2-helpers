@@ -6,10 +6,10 @@ namespace wdmg\helpers;
  * Yii2 Custom array helper
  *
  * @category        Helpers
- * @version         1.4.2
+ * @version         1.4.3
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
- * @copyright       Copyright (c) 2019 - 2020 W.D.M.Group, Ukraine
+ * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine
  * @license         https://opensource.org/licenses/MIT Massachusetts Institute of Technology (MIT) License
  *
  */
@@ -317,7 +317,7 @@ class ArrayHelper extends BaseArrayHelper
      * @return array
      */
     public static function buildTree(&$array = [], $parentId = 0, $parentKey = 'parent_id', $childsKey = 'items', $level = 1) {
-        $tree = array();
+        $tree = [];
         foreach ($array as &$item) {
             if ($item[$parentKey] == $parentId) {
                 $child = self::buildTree($array, $item['id'], $parentKey, $childsKey, $level+1);
@@ -367,4 +367,76 @@ class ArrayHelper extends BaseArrayHelper
         return $flatten;
     }
 
+    /**
+     * Finds and changes the name of an array key`s
+     *
+     * @param array $array
+     * @return int|mixed|string|null
+     */
+    public static function changeKey($array = [], $keySetOrCallBack = [])
+    {
+        if (!is_array($array)) {
+            throw new InvalidArgumentException('The `$array` argument must be array.');
+            return null;
+        }
+
+        if (!is_array($keySetOrCallBack) || !is_callable($keySetOrCallBack)) {
+            throw new InvalidArgumentException('The `$keySetOrCallBack` argument must be array or callable.');
+            return null;
+        }
+
+        $output = [];
+        foreach ($array as $k => $v) {
+            if (is_callable($keySetOrCallBack))
+                $key = call_user_func_array($keySetOrCallBack, [$k, $v]);
+            else
+                $key = $keySetOrCallBack[$k] ?? $k;
+
+            $output[$key] = is_array($v) ? self::changeKey($v, $keySetOrCallBack) : $v;
+        }
+
+        return $output;
+    }
+
+    /**
+     * Returns the key of the first element of the array
+     *
+     * @param array $array
+     * @return int|mixed|string|null
+     */
+    public static function keyFirst($array = [])
+    {
+        if (!is_array($array)) {
+            throw new InvalidArgumentException('The `$array` argument must be array.');
+            return null;
+        }
+
+        if (!function_exists('array_key_first')) {
+            foreach ($array as $key => $value) {
+                return $key;
+            }
+        } else {
+            return array_key_first($array);
+        }
+    }
+
+    /**
+     * Returns the key of the last element of the array
+     *
+     * @param array $array
+     * @return int|mixed|string|null
+     */
+    public static function keyLast($array = [])
+    {
+        if (!is_array($array)) {
+            throw new InvalidArgumentException('The `$array` argument must be array.');
+            return null;
+        }
+
+        if (!function_exists('array_key_last')) {
+            return key(array_slice($array, -1, 1, true));
+        } else {
+            return array_key_last($array);
+        }
+    }
 }

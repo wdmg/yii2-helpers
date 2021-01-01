@@ -19,6 +19,7 @@ To install the helpers, run the following command in the console:
 `$ composer require "wdmg/yii2-helpers"`
 
 # Status and version [ready to use]
+* v.1.4.3 - Added `keyFirst()` and `keyLast()` methods to `ArrayHelper`
 * v.1.4.2 - Added `genUUID()` and `flattenTree()` methods
 * v.1.4.1 - Added string detection methods to `StringHelper`
 * v.1.4.0 - Added `KeyboardLayoutHelper` and `DbSchemaTrait` for migrations
