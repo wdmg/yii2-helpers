@@ -380,7 +380,7 @@ class ArrayHelper extends BaseArrayHelper
             return null;
         }
 
-        if (!is_array($keySetOrCallBack) || !is_callable($keySetOrCallBack)) {
+        if (!is_array($keySetOrCallBack) && !is_callable($keySetOrCallBack)) {
             throw new InvalidArgumentException('The `$keySetOrCallBack` argument must be array or callable.');
             return null;
         }
