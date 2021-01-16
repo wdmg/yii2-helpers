@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## 1.4.4 (2021-01-17)
+ * Fixed `StringHelper::stripTags()`
+ 
 ## 1.4.3 (2021-01-01)
  * Added `keyFirst()` and `keyLast()` methods to `ArrayHelper`
  

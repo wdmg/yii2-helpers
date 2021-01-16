@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 short integer helper
  *
  * @category        Helpers
- * @version         1.4.3
+ * @version         1.4.4
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine
@@ -81,7 +81,7 @@ class StringHelper extends BaseStringHelper
         if (empty($tags))
             $input = preg_replace("#<\s*\/?\s*[^>]*?>#im", $replacement, $input);
         else
-            $input = preg_replace("#<\s*\/?(".$strip_tags.")\s*[^>]*?>#im", $replacement, $input);
+            $input = preg_replace("#<\s*\/?(".$tags.")\s*[^>]*?>#im", $replacement, $input);
 
         $input = str_replace("\n", ' ', $input);
         $input = preg_replace('|[\s]+|s', ' ', $input);
