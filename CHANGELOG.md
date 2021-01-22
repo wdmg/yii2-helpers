@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## 1.4.5 (2021-01-22)
+ * Added methods for working with timezones `DateAndTime::getTimezones(...)`
+ 
 ## 1.4.4 (2021-01-17)
  * Fixed `StringHelper::stripTags()`
  

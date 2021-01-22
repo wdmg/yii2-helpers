@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 Date and Time helper
  *
  * @category        Helpers
- * @version         1.4.4
+ * @version         1.4.5
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine
@@ -20,6 +20,11 @@ use yii\helpers\BaseFormatConverter;
 class DateAndTime extends BaseFormatConverter
 {
 
+    /**
+     * Stores a description of time zones.
+     *
+     * @var array
+     */
     protected static $_timeZones = [
         ['abbr' => 'A', 'name' => 'Alpha Time Zone', 'location' => 'Military', 'offsets' => ['+01:00']],
         ['abbr' => 'ACDT', 'name' => 'Australian Central Daylight Time', 'location' => 'Australia', 'offsets' => ['+10:30']],
@@ -267,6 +272,15 @@ class DateAndTime extends BaseFormatConverter
         ['abbr' => 'Z', 'name' => 'Zulu Time Zone', 'location' => 'Military', 'offsets' => ['+00:00']]
     ];
 
+    /**
+     * Returns the time difference between two dates.
+     *
+     * @param null $datetime1
+     * @param null $datetime2
+     * @param array $options
+     * @return mixed|void
+     * @throws \Exception
+     */
     public static function diff($datetime1 = null, $datetime2 = null, $options = [])
     {
         //@TODO: https://www.yiiframework.com/doc/api/2.0/yii-i18n-formatter#asRelativeTime()-detail
@@ -301,6 +315,13 @@ class DateAndTime extends BaseFormatConverter
 
     }
 
+    /**
+     * Converts the difference in seconds to UTC.
+     *
+     * @param $offset
+     * @param null $format
+     * @return string
+     */
     public static function convertOffsetToUTC($offset, $format = null)
     {
         $prefix = $offset < 0 ? '-' : '+';
@@ -308,6 +329,13 @@ class DateAndTime extends BaseFormatConverter
         return $prefix . $formatted;
     }
 
+    /**
+     * Returns the abbreviation of the timezone.
+     *
+     * @param $timezone
+     * @return string
+     * @throws \Exception
+     */
     public static function getTimezoneAbbr($timezone)
     {
         $dateTime = new \DateTime(null, new \DateTimeZone($timezone));
@@ -315,17 +343,34 @@ class DateAndTime extends BaseFormatConverter
         return strtoupper($abbr);
     }
 
+    /**
+     * Returns the name/description of time zones.
+     *
+     * @return array
+     */
     public static function getTimezoneNames()
     {
         return self::$_timeZones;
     }
 
+    /**
+     * Sets the name/description of time zones.
+     *
+     * @param $timezones
+     */
     public static function setTimezoneNames($timezones)
     {
         if (is_array($timezones) && !empty($timezones))
             self::$_timeZones = $timezones;
     }
 
+    /**
+     * Returns the name of the timezone.
+     *
+     * @param $abbr
+     * @param $utc
+     * @return mixed|null
+     */
     public static function getTimezoneName($abbr, $utc)
     {
         $timezones = self::getTimezoneNames();
@@ -340,6 +385,19 @@ class DateAndTime extends BaseFormatConverter
         return null;
     }
 
+    /**
+     * Returns a list of time zones.
+     *
+     * @param bool $groupped
+     * @param bool $expanded
+     * @param null $regions
+     * @param bool $addUTC
+     * @param bool $addDescription
+     * @param bool $addLocations
+     * @param bool $addTransitions
+     * @return array
+     * @throws \Exception
+     */
     public static function getTimezones($groupped = false, $expanded = false, $regions = null, $addUTC = true, $addDescription = false, $addLocations = false, $addTransitions = false)
     {
 

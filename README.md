@@ -19,6 +19,7 @@ To install the helpers, run the following command in the console:
 `$ composer require "wdmg/yii2-helpers"`
 
 # Status and version [ready to use]
+* v.1.4.5 - Added methods for working with timezones `DateAndTime::getTimezones(...)`
 * v.1.4.4 - Fixed `StringHelper::stripTags()`
 * v.1.4.3 - Added `keyFirst()` and `keyLast()` methods to `ArrayHelper`
 * v.1.4.2 - Added `genUUID()` and `flattenTree()` methods

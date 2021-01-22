@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 Custom array helper
  *
  * @category        Helpers
- * @version         1.4.4
+ * @version         1.4.5
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine
