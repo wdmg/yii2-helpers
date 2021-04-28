@@ -3,10 +3,10 @@
 namespace wdmg\helpers;
 
 /**
- * Yii2 Text analyzer helper
+ * Yii2 Text Analyzer
  *
  * @category        Helpers
- * @version         1.4.5
+ * @version         1.4.6
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine
@@ -117,7 +117,7 @@ class TextAnalyzer extends StringHelper
      * Analyzes the location of keywords in source tags
      * and assigns conditional weight to each such keyword
      *
-     * @param $source
+     * @param $source (HTML-source)
      * @param $stop_words
      * @param $min_length
      * @param $weights

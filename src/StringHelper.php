@@ -3,10 +3,10 @@
 namespace wdmg\helpers;
 
 /**
- * Yii2 short integer helper
+ * Yii2 String Helper
  *
  * @category        Helpers
- * @version         1.4.5
+ * @version         1.4.6
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine
@@ -340,6 +340,32 @@ class StringHelper extends BaseStringHelper
             default:
                 return (int)$size;
         }
+    }
+
+    public static function genLettersRange($end, $start = '', $letters = null) {
+        $range = [];
+        $length = mb_strlen($end);
+
+        if (is_null($letters)) {
+            $letters = range('A', 'Z');
+        } else if (!is_array($letters) && is_string($letters)) {
+            $letters = preg_split('//u', $letters, -1, PREG_SPLIT_NO_EMPTY);
+        }
+
+        foreach ($letters as $letter) {
+            $range[] = $start . $letter;
+
+            if (($start . $letter) == $end)
+                return $range;
+        }
+
+        foreach ($range as $letter) {
+            if (!in_array($end, $range) && mb_strlen($letter) < $length) {
+                $range = array_merge($range, self::genLettersRange($end, $letter, $letters));
+            }
+        }
+
+        return $range;
     }
 
     /**

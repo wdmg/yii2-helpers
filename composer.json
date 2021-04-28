@@ -4,7 +4,7 @@
   "keywords": ["yii", "yii2", "extension", "helper", "array-helper", "daterime-helper", "ip-helper", "string-helper", "text-analyzer", "utilities", "wdmg"],
   "type": "yii2-extension",
   "license": "MIT",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "homepage": "https://github.com/wdmg/yii2-helpers",
   "support": {
     "source": "https://github.com/wdmg/yii2-helpers",
@@ -21,7 +21,8 @@
     }
   ],
   "require": {
-    "yiisoft/yii2": "^2.0.40"
+    "yiisoft/yii2": "^2.0.40",
+    "yiisoft/yii2-httpclient": "~2.0.0"
   },
   "minimum-stability": "dev",
   "autoload": {

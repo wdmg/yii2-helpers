@@ -22,6 +22,8 @@ return [
     'Used as a repeater when encapsulating IPv6 in IPv4 (6to4)' => "Используются в качестве ретранслятора при инкапсуляции IPv6 в IPv4 (6to4) ",
     'Used for multicasting.' => "Используются для многоадресной рассылки.",
 
+    'The source of receiving currency rates is not specified.' => "Не указан источник получения курсов валют.",
+
 ];
 
 ?>

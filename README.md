@@ -19,6 +19,7 @@ To install the helpers, run the following command in the console:
 `$ composer require "wdmg/yii2-helpers"`
 
 # Status and version [ready to use]
+* v.1.4.6 - Added `ExchangeRates` helper
 * v.1.4.5 - Added methods for working with timezones `DateAndTime::getTimezones(...)`
 * v.1.4.4 - Fixed `StringHelper::stripTags()`
 * v.1.4.3 - Added `keyFirst()` and `keyLast()` methods to `ArrayHelper`
@@ -28,9 +29,3 @@ To install the helpers, run the following command in the console:
 * v.1.3.6 - Fixed CIDR methods. Added IPv6 methods in `IpAddressHelper`
 * v.1.3.5 - IpAddressHelper fixed
 * v.1.3.4 - Added IpAddressHelper
-* v.1.3.3 - Added buildTree() method to ArrayHelper
-* v.1.3.2 - Up to date dependencies
-* v.1.3.1 - Added crossMerging() method to ArrayHelper
-* v.1.3.0 - Added TextAnalyzer helper
-* v.1.2.2 - Added exportCSV, importCSV methods to ArrayHelper
-* v.1.2.1 - Added stripTags() method for StringHelper

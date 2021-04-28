@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 Date and Time helper
  *
  * @category        Helpers
- * @version         1.4.5
+ * @version         1.4.6
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine
@@ -362,6 +362,20 @@ class DateAndTime extends BaseFormatConverter
     {
         if (is_array($timezones) && !empty($timezones))
             self::$_timeZones = $timezones;
+    }
+
+    public static function modify($date, $string) {
+
+        // Change the modifier string if needed
+        if ($date->format('N') == 7 ) { // It's Sunday and we're calculating a day using relative weeks
+            $matches = array();
+            $pattern = '/this week|next week|previous week|last week/i';
+            if (preg_match($pattern, $string, $matches)) {
+                $string = str_replace($matches[0], '-7 days '.$matches[0], $string);
+            }
+        }
+
+        return $date->modify($string);
     }
 
     /**

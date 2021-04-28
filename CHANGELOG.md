@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## 1.4.6 (2021-04-29)
+ * Added `ExchangeRates` helper
+ 
 ## 1.4.5 (2021-01-22)
  * Added methods for working with timezones `DateAndTime::getTimezones(...)`
  
