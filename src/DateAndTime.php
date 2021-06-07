@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 Date and Time helper
  *
  * @category        Helpers
- * @version         1.4.6
+ * @version         1.4.7
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine

@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 String Helper
  *
  * @category        Helpers
- * @version         1.4.6
+ * @version         1.4.7
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine
@@ -315,7 +315,7 @@ class StringHelper extends BaseStringHelper
     /**
      * Converts string of size to bytes in integer
      *
-     * @param string $filesize $size of file with suffix, like: 10Kb, 10M, 2Gb
+     * @param string $size with suffix, like: 10Kb, 10M, 2Gb
      * @return int
      */
     public static function sizeToBytes($size) {
@@ -340,6 +340,29 @@ class StringHelper extends BaseStringHelper
             default:
                 return (int)$size;
         }
+    }
+
+    /**
+     * Converts integer of bytes to size in string
+     *
+     * @param integer of size in bytes
+     * @return string of size with suffix, like: 10Kb, 10M, 2Gb
+     */
+    public static function formatBytes($bytes, $precision = 2) {
+        $units = ['bytes', 'Kb', 'Mb', 'Gb', 'Tb', 'Eb', 'Zb', 'Yb'];
+        $bytes = max((int)$bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+
+        // Uncomment one of the following alternatives
+        $bytes /= pow(1024, $pow);
+        //$bytes /= (1 << (10 * $pow));
+
+        return round($bytes, $precision) . ' ' . $units[$pow];
+    }
+
+    public static function sizeFormatNormalize($size, $precision = 2) {
+        return self::formatBytes(self::sizeToBytes($size), $precision);
     }
 
     public static function genLettersRange($end, $start = '', $letters = null) {

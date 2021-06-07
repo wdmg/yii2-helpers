@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## 1.4.7 (2021-06-08)
+ * Added `StringHelper::formatBytes()` method
+
 ## 1.4.6 (2021-04-29)
  * Added `ExchangeRates` helper
  
