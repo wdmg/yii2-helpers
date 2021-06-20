@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## 1.4.8 (2021-06-20)
+ * Fixed syntax (backward compatibility for PHP 5.6)
+
 ## 1.4.7 (2021-06-08)
  * Added `StringHelper::formatBytes()` method
 

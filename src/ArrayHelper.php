@@ -6,7 +6,7 @@ namespace wdmg\helpers;
  * Yii2 Custom array helper
  *
  * @category        Helpers
- * @version         1.4.7
+ * @version         1.4.8
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
  * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine
@@ -390,7 +390,7 @@ class ArrayHelper extends BaseArrayHelper
             if (is_callable($keySetOrCallBack))
                 $key = call_user_func_array($keySetOrCallBack, [$k, $v]);
             else
-                $key = $keySetOrCallBack[$k] ?? $k;
+                $key = isset($keySetOrCallBack[$k]) ? $keySetOrCallBack[$k] : $k;
 
             $output[$key] = is_array($v) ? self::changeKey($v, $keySetOrCallBack) : $v;
         }
