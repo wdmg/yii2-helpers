@@ -6,10 +6,10 @@ namespace wdmg\helpers;
  * Yii2 keyboard layout helper
  *
  * @category        Helpers
- * @version         1.4.8
+ * @version         1.5.0
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
- * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine
+ * @copyright       Copyright (c) 2019 - 2023 W.D.M.Group, Ukraine
  * @license         https://opensource.org/licenses/MIT Massachusetts Institute of Technology (MIT) License
  *
  */
@@ -79,7 +79,7 @@ class KeyboardLayoutHelper extends BaseStringHelper
             $chars = preg_split('!!u', self::$layouts[$locale], null, PREG_SPLIT_NO_EMPTY);
             if ($format == 1) {
                 return $chars;
-            } elseif ($format == 2 && is_countable($chars)) {
+            } elseif ($format == 2 && is_array($chars)) {
                 $keycodes = [];
                 foreach ($chars as $char) {
                     $keycodes[] = \ord($char);

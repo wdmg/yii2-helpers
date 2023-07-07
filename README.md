@@ -19,15 +19,7 @@ To install the helpers, run the following command in the console:
 `$ composer require "wdmg/yii2-helpers"`
 
 # Status and version [ready to use]
+* v.1.5.0 - Update copyrights, fix DateTime helper
 * v.1.4.8 - Backward compatibility for PHP 5.6
 * v.1.4.7 - Added `StringHelper::formatBytes()` method
 * v.1.4.6 - Added `ExchangeRates` helper
-* v.1.4.5 - Added methods for working with timezones `DateAndTime::getTimezones(...)`
-* v.1.4.4 - Fixed `StringHelper::stripTags()`
-* v.1.4.3 - Added `keyFirst()` and `keyLast()` methods to `ArrayHelper`
-* v.1.4.2 - Added `genUUID()` and `flattenTree()` methods
-* v.1.4.1 - Added string detection methods to `StringHelper`
-* v.1.4.0 - Added `KeyboardLayoutHelper` and `DbSchemaTrait` for migrations
-* v.1.3.6 - Fixed CIDR methods. Added IPv6 methods in `IpAddressHelper`
-* v.1.3.5 - IpAddressHelper fixed
-* v.1.3.4 - Added IpAddressHelper

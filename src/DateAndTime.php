@@ -6,10 +6,10 @@ namespace wdmg\helpers;
  * Yii2 Date and Time helper
  *
  * @category        Helpers
- * @version         1.4.8
+ * @version         1.5.0
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-helpers
- * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine
+ * @copyright       Copyright (c) 2019 - 2023 W.D.M.Group, Ukraine
  * @license         https://opensource.org/licenses/MIT Massachusetts Institute of Technology (MIT) License
  *
  */
@@ -286,33 +286,42 @@ class DateAndTime extends BaseFormatConverter
         //@TODO: https://www.yiiframework.com/doc/api/2.0/yii-i18n-formatter#asRelativeTime()-detail
 
         static::initI18N('app/helpers');
-        $default = ['layout' => '<span class="{class}">{datetime}</span>', 'inpastClass' => 'field-inpast-datetime', 'futureClass' => 'field-future-datetime'
+        $default = [
+			'layout' => '<span class="{class}">{datetime}</span>',
+	        'inpastClass' => 'field-inpast-datetime',
+	        'futureClass' => 'field-future-datetime'
         ];
         $options = array_merge($default, $options);
 
         if (!$datetime1)
             return;
 
+		$date = new \DateTime();
+
         if ($datetime2)
-            $datenow = new \DateTime($datetime2);
-        else
-            $datenow = new \DateTime("now");
+            $datenow = $date->createFromFormat('Y-m-d H:i:s', $datetime2);
 
-        $dateend = new \DateTime($datetime1);
-        $interval = $datenow->diff($dateend);
+	    $content = $datetime1;
+		if (!is_null($datenow)) {
+			$dateend = new \DateTime($datetime1);
+			$interval = $datenow->diff($dateend);
 
-        $content = Yii::t('app/helpers', '{y, plural, =0{} =1{# year} one{# year} few{# years} many{# years} other{# years}}{y, plural, =0{} =1{, } other{, }}{m, plural, =0{} =1{# month} one{# month} few{# months} many{# months} other{# months}}{m, plural, =0{} =1{, } other{, }}{d, plural, =0{} =1{# day} one{# day} few{# days} many{# days} other{# days}}{d, plural, =0{} =1{, } other{, }}{h, plural, =0{} =1{# hour} one{# hour} few{# hours} many{# hours} other{# hours}}{h, plural, =0{} =1{, } other{, }}{i, plural, =0{} =1{# minute} one{# minute} few{# minutes} many{# minutes} other{# minutes}}{i, plural, =0{} =1{, } other{, }}{s, plural, =0{} =1{# second} one{# second} few{# seconds} many{# seconds} other{# seconds}}{invert, plural, =0{ left} =1{ ago} other{}}',
-            $interval
-        );
+			$content = Yii::t('app/helpers', '{y, plural, =0{} =1{# year} one{# year} few{# years} many{# years} other{# years}}{y, plural, =0{} =1{, } other{, }}{m, plural, =0{} =1{# month} one{# month} few{# months} many{# months} other{# months}}{m, plural, =0{} =1{, } other{, }}{d, plural, =0{} =1{# day} one{# day} few{# days} many{# days} other{# days}}{d, plural, =0{} =1{, } other{, }}{h, plural, =0{} =1{# hour} one{# hour} few{# hours} many{# hours} other{# hours}}{h, plural, =0{} =1{, } other{, }}{i, plural, =0{} =1{# minute} one{# minute} few{# minutes} many{# minutes} other{# minutes}}{i, plural, =0{} =1{, } other{, }}{s, plural, =0{} =1{# second} one{# second} few{# seconds} many{# seconds} other{# seconds}}{invert, plural, =0{ left} =1{ ago} other{}}',
+				$interval
+			);
+		}
 
         $layout = $options['layout'];
-        if ($interval->invert == 1)
-            $layout = str_replace('{class}', $options['inpastClass'], $layout);
-        else
-            $layout = str_replace('{class}', $options['futureClass'], $layout);
+		if (!empty($layout)) {
+			if ($interval->invert == 1)
+				$layout = str_replace('{class}', $options['inpastClass'], $layout);
+			else
+				$layout = str_replace('{class}', $options['futureClass'], $layout);
 
-        return str_replace('{datetime}', $content, $layout);
-
+			return str_replace('{datetime}', $content, $layout);
+		} else {
+			return $content;
+		}
     }
 
     /**

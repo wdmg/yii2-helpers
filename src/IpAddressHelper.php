@@ -6,11 +6,11 @@ namespace wdmg\helpers;
  * Yii2 IP address helper
  *
  * @category        Helpers
- * @version         1.4.8
+ * @version         1.5.0
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>, Jonavon Wilcox <jonavon@gmail.com>, Manuel Kasper <mk@neon1.net>
  * @see             https://gist.github.com/stibiumz/5e6a92a195c50c875649, https://gist.github.com/jonavon/2028872, http://m0n0.ch/wall, https://www.experts-exchange.com/questions/23903322/Need-PHP-code-for-calculating-subnets.html
  * @link            https://github.com/wdmg/yii2-helpers
- * @copyright       Copyright (c) 2019-2020 W.D.M.Group, Ukraine
+ * @copyright       Copyright (c) 2019-2023 W.D.M.Group, Ukraine
  * @copyright       Copyright (c) 2003-2004 Manuel Kasper <mk@neon1.net>
  * @license         https://opensource.org/licenses/MIT Massachusetts Institute of Technology (MIT) License
  *
@@ -2536,7 +2536,7 @@ class IpAddressHelper extends IpHelper
     public static function whois($host, $flags = null, $asHtml = true) {
 
         $zone = array_slice(explode(".", trim($host)), -1)[0];
-        if (isset(self::WHOIS_SERVERS[$zone])) {
+        if (!is_null(self::WHOIS_SERVERS[$zone])) {
             $servers = self::WHOIS_SERVERS[$zone];
             foreach ($servers as $server) {
                 if ($info = self::whoisQuery($server, trim($host))) {

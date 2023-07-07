@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## 1.5.0 (2023-07-07)
+ * Update copyrights, fix DateTime helper
+
 ## 1.4.8 (2021-06-20)
  * Fixed syntax (backward compatibility for PHP 5.6)
 
